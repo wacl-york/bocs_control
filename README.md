@@ -1,2 +1,2 @@
-# sensor_control
+# AQ Control
 Control scripts for a low-cost AQ instrument.
