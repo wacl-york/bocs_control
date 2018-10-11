@@ -1,15 +1,16 @@
-"""=============================================================================
+"""=======================================================================================
 AQ INSTRUMENT CONTROL
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
-============================================================================="""
+======================================================================================="""
 import threading
-#===============================================================================
+
+import serial
+#=========================================================================================
 class DataReader(threading.Thread):
     """
-    DataReader describes a thread whose purpose is to read lines of serial
-    input from a specified serial port and enqueue said lines of serial input
-    into a shared FIFO queue.
+    DataReader describes a thread whose purpose is to read lines of serialinput from a
+    specified serial port and enqueue said lines of serial input into a shared FIFO queue.
     """
     def __init__(self, name, port):
         threading.Thread.__init__(self)
@@ -21,12 +22,16 @@ class DataReader(threading.Thread):
         Check whether or not the port property of this object refers to a valid
         serial port exposed through /dev.
         """
-        pass
+        try:
+            assert self.port in [port.dev for port in serial.tools.list_ports.comports()]
+        except AssertionError:
+            # TODO: HANDLE PORT UNAVAILABLE EXCEPTION
+            pass
 
     def check_port_function(self):
         """
-        Check whether or not data can be read from the serial port, and whether
-        or not any data that can be read seems sensible.
+        Check whether or not data can be read from the serial port, and whether or not any
+        data that can be read seems sensible.
         """
         pass
 
@@ -70,12 +75,12 @@ class DataWriter(threading.Thread):
         Write data to the appropriate log file, decided by the passed type.
         """
         pass
-#===============================================================================
+#=========================================================================================
 def main():
     """
     Main entry point for the program.
     """
     pass
-#===============================================================================
+#=========================================================================================
 if __name__ == '__main__':
     main()
