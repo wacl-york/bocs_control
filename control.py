@@ -18,23 +18,29 @@ class DataReader(threading.Thread):
 
     def check_port_available(self):
         """
-        TODO: IMPLEMENT THIS METHOD
+        Check whether or not the port property of this object refers to a valid
+        serial port exposed through /dev.
         """
         pass
 
     def check_port_function(self):
         """
-        TODO: IMPLEMENT THIS METHOD
+        Check whether or not data can be read from the serial port, and whether
+        or not any data that can be read seems sensible.
         """
         pass
 
     def enqueue_data(self):
         """
-        TODO: IMPLEMENT THIS METHOD
+        Put an incoming line of data into the shared queue, ready for a
+        DataWriter to process.
         """
         pass
 
     def run(self):
+        """
+        Main entry point for DataReader threads.
+        """
         pass
 
 class DataWriter(threading.Thread):
@@ -47,7 +53,23 @@ class DataWriter(threading.Thread):
         threading.Thread.__init__(self)
         self.name = name
 
-    # TODO: DESIGN AND IMPLEMENT THIS CLASS
+    def dequeue_data(self):
+        """
+        Pull a line of data from the front of the shared queue.
+        """
+        pass
+
+    def filter_data(self, data):
+        """
+        Determine and return the type of data that was passed.
+        """
+        pass
+
+    def write_data(self, data, data_type):
+        """
+        Write data to the appropriate log file, decided by the passed type.
+        """
+        pass
 #===============================================================================
 def main():
     """
