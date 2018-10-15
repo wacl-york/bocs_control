@@ -15,12 +15,12 @@ def main():
     global_queue = queue.Queue()
 
     reader_thread = data_reader.DataReader('reader_1',
-                                           '/dev/ttyusb0',
+                                           '/dev/cu.usbmodem1411',
                                            global_queue)
     writer_thread = data_writer.DataWriter('writer_1', global_queue)
 
-    reader_thread.run()
-    writer_thread.run()
+    reader_thread.start()
+    writer_thread.start()
 #===============================================================================
 if __name__ == '__main__':
     main()

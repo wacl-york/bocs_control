@@ -3,6 +3,7 @@ DataReader CLASS
 --------------------------------------------------------------------------------
 
 ============================================================================="""
+import sys
 import threading
 
 import serial
@@ -17,28 +18,32 @@ class DataReader(threading.Thread):
     """
     def __init__(self, name, port_name, shared_queue):
         threading.Thread.__init__(self)
+        sys.stderr.write(f"INFO: DataReader {name} INITIALISING WITH PORT NAME {port_name}\n")
         self.name = name
         self.port_name = port_name
         self.queue = shared_queue
 
         try:
+            sys.stderr.write(f"INFO: DataReader {self.name} CHECKING PORT {self.port_name} AVAILABILITY\n")
             self.check_port_available()
         except serialutil.SerialException:
             # TODO: HANDLE PORT UNAVAILABLE
-            pass
+            sys.stderr.write(f"ERROR: DataReader {self.name} THINKS PORT {self.port_name} IS UNAVAILABLE\n")
 
         try:
+            sys.stderr.write(f"INFO: DataReader {self.name} CHECKING PORT {self.port_name} FUNCTIONALITY\n")
             self.check_port_function()
         except serialutil.SerialException:
             # TODO: HANDLE INCORRECT PORT FUNCTION
-            pass
+            sys.stderr.write(f"ERROR: DataReader {self.name} THINKS PORT {self.port_name} IS MALFUNCTIONING\n")
 
         try:
+            sys.stderr.write(f"INFO: DataReader {self.name} OPENING PORT {self.port_name} FOR READ\n")
             self.port = serial.Serial(self.port_name, 9600, timeout=1)
             self.port.reset_input_buffer()
         except serialutil.SerialException:
             # TODO: HANDLE PORT NOT OPENABLE EXCEPTION
-            pass
+            sys.stderr.writer(f"ERROR: DataReader {self.name} CAN'T OPEN {self.port_name} FOR READ\n")
 
     def check_port_available(self):
         """
@@ -46,7 +51,7 @@ class DataReader(threading.Thread):
         valid serial port exposed through /dev.
         """
         try:
-            assert self.port_name in [port.dev for port in comports()]
+            assert self.port_name in [port.device for port in comports()]
         except AssertionError as exception:
             raise serialutil.SerialException from exception
 
@@ -65,13 +70,18 @@ class DataReader(threading.Thread):
         """
         Read and return a line of attached instrument data.
         """
-        return self.port.readline()
+        sys.stderr.write(f"INFO: DataReader {self.name} READING DATA FROM {self.port_name}\n")
+        data = self.port.readline()
+        sys.stderr.write(f"INFO: DataReader {self.name} READ {data} FROM {self.port_name}\n")
+        return data
 
     def enqueue_data(self, data):
         """
         Put an incoming line of data into a shared queue, ready for a DataWriter
         to process.
         """
+        sys.stderr.write(f"INFO: DataReader {self.name} ENQUEUEING DATA TO SHARED QUEUE\n")
+        sys.stderr.write(f"INFO: QUEUE IS NOW SIZE {self.queue.qsize()}\n")
         self.queue.put(data, block=True)
 
     def run(self):

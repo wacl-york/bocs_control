@@ -3,7 +3,7 @@ DataWriter CLASS
 --------------------------------------------------------------------------------
 
 ============================================================================="""
-import queue
+import sys
 import threading
 #===============================================================================
 class DataWriter(threading.Thread):
@@ -12,10 +12,11 @@ class DataWriter(threading.Thread):
     input from a shared FIFO queue into different files, depending on the nature
     of the serial input to be flushed.
     """
-    def __init__(self, name, queue):
+    def __init__(self, name, shared_queue):
         threading.Thread.__init__(self)
+        sys.stderr.write(f"INFO: DataWriter {name} INITIALISING\n")
         self.name = name
-        self.queue = queue
+        self.queue = shared_queue
 
     def dequeue_data(self):
         """
@@ -23,30 +24,33 @@ class DataWriter(threading.Thread):
         """
         # TODO: MODIFY CALL TO queue.get TO INCORPORATE A SUITABLE TIMEOUT,
         # BASED ON ATTACHED INSTRUMENT RESPONSE TIMES
+        sys.stderr.write(f"INFO: DataWriter {self.name} DEQUEUEING DATA\n")
+        sys.stderr.write(f"INFO: QUEUE SIZE IS NOW {self.queue.qsize()}\n")
         return self.queue.get(block=True, timeout=None)
 
     def filter_data(self, data):
         """
         Determine and return the type of data that was passed.
         """
+        sys.stderr.write(f"INFO: DataWriter {self.name} FILTERING DATA\n")
         # TODO: IMPLEMENT THIS METHOD
-        pass
 
     def write_data(self, data, data_type):
         """
         Write data to the appropriate log file, decided by the passed type.
         """
         # TODO: FULLY IMPLEMENT THIS METHOD
+        sys.stderr.write(f"INFO: DataWriter {self.name} WRITING DATA TO LOG FILE\n")
         try:
-            with open('~/aq_control_log', 'a') as data_log:
-                data_log.write(data)
+            with open('logs/aq_control.log', 'a') as data_log:
+                data_log.write(data.decode())
         except OSError:
             # TODO: HANDLE INABILITY TO OPEN DATA LOG
-            pass
+            sys.stderr.write(f"ERROR: DataWriter {self.name} UNABLE TO APPEND TO DATA LOG\n")
 
     def run(self):
         """
         Main entry point for DataWriter threads.
         """
         while True:
-            self.write_data(self.dequeue_data, None)
+            self.write_data(self.dequeue_data(), None)

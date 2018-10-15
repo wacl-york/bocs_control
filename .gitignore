@@ -4,6 +4,12 @@
 # Ignore various files that we don't want in the history.
 ################################################################################
 
+# cache
+__pycache__
+
+# log files (testing)
+logs
+
 # swap
 [._]*.s[a-v][a-z]
 [._]*.sw[a-p]
