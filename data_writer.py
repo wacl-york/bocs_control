@@ -3,6 +3,7 @@ DataWriter CLASS
 --------------------------------------------------------------------------------
 
 ============================================================================="""
+from datetime import datetime as dt
 import sys
 import threading
 #===============================================================================
@@ -44,8 +45,12 @@ class DataWriter(threading.Thread):
                        "\n")
         sys.stderr.write(info_string)
         try:
-            with open('logs/aq_control.log', 'a') as data_log:
-                data_log.write(data.decode())
+            date = dt.now()
+            id_string = (data.split(',')[0])[8:]
+            date_string = f"{date.year}-{date.month}-{date.day}"
+            filename = f"{id_string}_{date_string}_data.log"
+            with open(f"logs/{filename}", 'a') as data_log:
+                data_log.write(data)
         except OSError:
             # TODO: HANDLE INABILITY TO OPEN DATA LOG
             err_string = (f"ERROR: DataWriter {self.name} UNABLE TO APPEND TO "
