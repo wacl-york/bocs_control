@@ -18,32 +18,46 @@ class DataReader(threading.Thread):
     """
     def __init__(self, name, port_name, shared_queue):
         threading.Thread.__init__(self)
-        sys.stderr.write(f"INFO: DataReader {name} INITIALISING WITH PORT NAME {port_name}\n")
+        err_string = (f"INFO: DataReader {name} INITIALISING WITH PORT NAME"
+                      f" {port_name}\n")
+        sys.stderr.write(err_string)
         self.name = name
         self.port_name = port_name
         self.queue = shared_queue
 
         try:
-            sys.stderr.write(f"INFO: DataReader {self.name} CHECKING PORT {self.port_name} AVAILABILITY\n")
+            info_string = (f"INFO: DataReader {self.name} CHECKING PORT "
+                           f"{self.port_name} AVAILABILITY\n")
+            sys.stderr.write(info_string)
             self.check_port_available()
         except serialutil.SerialException:
             # TODO: HANDLE PORT UNAVAILABLE
-            sys.stderr.write(f"ERROR: DataReader {self.name} THINKS PORT {self.port_name} IS UNAVAILABLE\n")
+            err_string = (f"ERROR: DataReader {self.name} THINKS PORT "
+                          f"{self.port_name} IS UNAVAILABLE\n")
+            sys.stderr.write(err_string)
 
         try:
-            sys.stderr.write(f"INFO: DataReader {self.name} CHECKING PORT {self.port_name} FUNCTIONALITY\n")
+            info_string = (f"INFO: DataReader {self.name} CHECKING PORT "
+                           f"{self.port_name} FUNCTIONALITY\n")
+            sys.stderr.write(info_string)
             self.check_port_function()
         except serialutil.SerialException:
             # TODO: HANDLE INCORRECT PORT FUNCTION
-            sys.stderr.write(f"ERROR: DataReader {self.name} THINKS PORT {self.port_name} IS MALFUNCTIONING\n")
+            err_string = (f"ERROR: DataReader {self.name} THINKS PORT "
+                          f"{self.port_name} IS MALFUNCTIONING\n")
+            sys.stderr.write(err_string)
 
         try:
-            sys.stderr.write(f"INFO: DataReader {self.name} OPENING PORT {self.port_name} FOR READ\n")
+            info_string = (f"INFO: DataReader {self.name} OPENING PORT "
+                           f"{self.port_name} FOR READ\n")
+            sys.stderr.write(info_string)
             self.port = serial.Serial(self.port_name, 9600, timeout=1)
             self.port.reset_input_buffer()
         except serialutil.SerialException:
             # TODO: HANDLE PORT NOT OPENABLE EXCEPTION
-            sys.stderr.writer(f"ERROR: DataReader {self.name} CAN'T OPEN {self.port_name} FOR READ\n")
+            err_string = (f"ERROR: DataReader {self.name} CAN'T OPEN "
+                          f"{self.port_name} FOR READ\n")
+            sys.stderr.write(err_string)
 
     def check_port_available(self):
         """
@@ -70,9 +84,10 @@ class DataReader(threading.Thread):
         """
         Read and return a line of attached instrument data.
         """
-        sys.stderr.write(f"INFO: DataReader {self.name} READING DATA FROM {self.port_name}\n")
+        info_string = (f"INFO: DataReader {self.name} READING DATA FROM "
+                       f"{self.port_name}\n")
+        sys.stderr.write(info_string)
         data = self.port.readline()
-        sys.stderr.write(f"INFO: DataReader {self.name} READ {data} FROM {self.port_name}\n")
         return data
 
     def enqueue_data(self, data):
@@ -80,7 +95,9 @@ class DataReader(threading.Thread):
         Put an incoming line of data into a shared queue, ready for a DataWriter
         to process.
         """
-        sys.stderr.write(f"INFO: DataReader {self.name} ENQUEUEING DATA TO SHARED QUEUE\n")
+        info_string = (f"INFO: DataReader {self.name} ENQUEUEING DATA TO "
+                       "SHARED QUEUE\n")
+        sys.stderr.write(info_string)
         sys.stderr.write(f"INFO: QUEUE IS NOW SIZE {self.queue.qsize()}\n")
         self.queue.put(data, block=True)
 

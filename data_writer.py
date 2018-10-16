@@ -40,13 +40,17 @@ class DataWriter(threading.Thread):
         Write data to the appropriate log file, decided by the passed type.
         """
         # TODO: FULLY IMPLEMENT THIS METHOD
-        sys.stderr.write(f"INFO: DataWriter {self.name} WRITING DATA TO LOG FILE\n")
+        info_string = (f"INFO: DataWriter {self.name} WRITING DATA TO LOG FILE"
+                       "\n")
+        sys.stderr.write(info_string)
         try:
             with open('logs/aq_control.log', 'a') as data_log:
                 data_log.write(data.decode())
         except OSError:
             # TODO: HANDLE INABILITY TO OPEN DATA LOG
-            sys.stderr.write(f"ERROR: DataWriter {self.name} UNABLE TO APPEND TO DATA LOG\n")
+            err_string = (f"ERROR: DataWriter {self.name} UNABLE TO APPEND TO "
+                          "DATA LOG\n")
+            sys.stderr.write(err_string)
 
     def run(self):
         """
