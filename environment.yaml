@@ -1,4 +1,4 @@
-name: gfas_scripts
+name: aq_control
 channels:
       - defaults
       - conda-forge
