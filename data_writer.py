@@ -42,7 +42,8 @@ class DataWriter(threading.Thread):
         try:
             date = dt.now()
             id_string = (data.split(',')[0])
-            date_string = f"{date.year}-{date.month}-{date.day}"
+            date_string = (f'{date.year}-{str(date.month).zfill(2)}-'
+                           f'{str(date.day).zfill(2)}')
             filename = f"{id_string}_{date_string}_data.log"
             with open(f"logs/{id_string}/{filename}", 'a') as data_log:
                 data_log.write(data)
