@@ -99,7 +99,7 @@ class DataReader(threading.Thread):
                        "SHARED QUEUE\n")
         sys.stderr.write(info_string)
         sys.stderr.write(f"INFO: QUEUE IS NOW SIZE {self.queue.qsize()}\n")
-        self.queue.put(f"{self.port_name}, {data.decode()}", block=True)
+        self.queue.put(f"{self.port_name[5:]}, {data.decode()}", block=True)
 
     def run(self):
         """
