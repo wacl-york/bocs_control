@@ -23,9 +23,9 @@ def main():
 
     writer_thread = dw.DataWriter('DATA_WRITER', global_queue, instrument_names)
 
+    writer_thread.start()
     for thread in reader_threads:
         thread.start()
-    writer_thread.start()
 #===============================================================================
 if __name__ == '__main__':
     main()
