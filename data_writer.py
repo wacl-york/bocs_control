@@ -4,6 +4,7 @@ DataWriter CLASS
 
 ============================================================================="""
 from datetime import datetime as dt
+import os
 import sys
 import threading
 #===============================================================================
@@ -13,11 +14,12 @@ class DataWriter(threading.Thread):
     input from a shared FIFO queue into different files, depending on the nature
     of the serial input to be flushed.
     """
-    def __init__(self, name, shared_queue):
+    def __init__(self, name, shared_queue, instrument_names):
         threading.Thread.__init__(self)
         sys.stderr.write(f"INFO: DataWriter {name} INITIALISING\n")
         self.name = name
         self.queue = shared_queue
+        create_log_directories(instrument_names)
 
     def dequeue_data(self):
         """
@@ -29,14 +31,7 @@ class DataWriter(threading.Thread):
         sys.stderr.write(f"INFO: QUEUE SIZE IS NOW {self.queue.qsize()}\n")
         return self.queue.get(block=True, timeout=None)
 
-    def filter_data(self, data):
-        """
-        Determine and return the type of data that was passed.
-        """
-        sys.stderr.write(f"INFO: DataWriter {self.name} FILTERING DATA\n")
-        # TODO: IMPLEMENT THIS METHOD
-
-    def write_data(self, data, data_type):
+    def write_data(self, data):
         """
         Write data to the appropriate log file, decided by the passed type.
         """
@@ -49,7 +44,7 @@ class DataWriter(threading.Thread):
             id_string = (data.split(',')[0])
             date_string = f"{date.year}-{date.month}-{date.day}"
             filename = f"{id_string}_{date_string}_data.log"
-            with open(f"logs/{filename}", 'a') as data_log:
+            with open(f"logs/{id_string}/{filename}", 'a') as data_log:
                 data_log.write(data)
         except OSError:
             # TODO: HANDLE INABILITY TO OPEN DATA LOG
@@ -62,4 +57,22 @@ class DataWriter(threading.Thread):
         Main entry point for DataWriter threads.
         """
         while True:
-            self.write_data(self.dequeue_data(), None)
+            self.write_data(self.dequeue_data())
+
+def create_log_directories(instrument_names):
+    """
+    Create a directory to store instrument log files.
+    """
+    for instrument_name in instrument_names:
+        log_directory = f'logs/{instrument_name}'
+        if not os.path.isdir(log_directory):
+            info_string = (f'INFO: LOG DIRECTORY FOR INSTRUMENT {instrument_name}'
+                           ' DOES NOT EXIST - CREATING\n')
+            sys.stderr.write(info_string)
+            try:
+                os.makedirs(log_directory)
+            except OSError:
+                # TODO: HANDLE NOT BEING ABLE TO CREATE LOG FILE
+                err_string = ('ERROR: UNABLE TO CREATE LOG DIRECTORY FOR'
+                              f' INSTRUMENT {instrument_name}\n')
+            sys.stderr.write(err_string)

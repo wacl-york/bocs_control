@@ -13,17 +13,15 @@ def main():
     Main entry point for the program.
     """
     global_queue = queue.Queue()
+    instrument_names = ('SENSOR_ARRAY_1', 'SENSOR_ARRAY_2', 'PM_INSTRUMENT')
+    reader_threads = [None] * len(instrument_names)
 
-    reader_threads = (dr.DataReader('sensor_array_reader_1',
-                                    '/dev/SENSOR_ARRAY_1',
-                                    global_queue),
-                      dr.DataReader('sensor_array_reader_2',
-                                    '/dev/SENSOR_ARRAY_2',
-                                    global_queue),
-                      dr.DataReader('pm_reader',
-                                    '/dev/PM_INSTRUMENT',
-                                    global_queue))
-    writer_thread = dw.DataWriter('writer_1', global_queue)
+    for index, instrument_name in enumerate(instrument_names):
+        reader_threads[index] = dr.DataReader(f'instrument_name',
+                                              f'/dev/{instrument_name}',
+                                              global_queue)
+
+    writer_thread = dw.DataWriter('DATA_WRITER', global_queue, instrument_names)
 
     for thread in reader_threads:
         thread.start()
