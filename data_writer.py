@@ -76,4 +76,4 @@ def create_log_directories(instrument_names):
                 # TODO: HANDLE NOT BEING ABLE TO CREATE LOG FILE
                 err_string = ('ERROR: UNABLE TO CREATE LOG DIRECTORY FOR'
                               f' INSTRUMENT {instrument_name}\n')
-            sys.stderr.write(err_string)
+                sys.stderr.write(err_string)
