@@ -65,7 +65,8 @@ class DataReader(threading.Thread):
         valid serial port exposed through /dev.
         """
         try:
-            assert self.port_name in [port.device for port in comports()]
+            port_list = [port.device for port in comports(include_links=True)]
+            assert self.port_name in port_list
         except AssertionError as exception:
             raise serialutil.SerialException from exception
 
