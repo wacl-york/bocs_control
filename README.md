@@ -1,2 +1,2 @@
-# AQ Control
-Control scripts for a low-cost AQ instrument.
+# BOCS Control
+Control scripts for the BOCS.
