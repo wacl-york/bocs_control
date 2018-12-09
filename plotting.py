@@ -4,47 +4,24 @@ plotting
 Plot a window of incoming BOCS array data.
 ============================================================================="""
 from collections import deque
-import csv
 import sys
 ################################################################################
 import numpy as np
 import pyqtgraph as pg
 ################################################################################
-def median_mos(data):
+def median(data_type, data):
     """
-    Calculate and return median MOS sensor readings.
+    Calculate and return median sensor value.
     """
-    return np.median(data)
-
-def median_no_ppm(data):
-    """
-    Calculate and return median NO sensor readings in PPM.
-    """
-    return np.median(data)
-
-def median_co_ppm(data):
-    """
-    Calculate and return median CO sensor readings in PPM.
-    """
-    return np.median(data)
-
-def median_ox_ppm(data):
-    """
-    Calculate and return median Ox sensor readings in PPM.
-    """
-    return np.median(data)
-
-def median_no2_ppm(data):
-    """
-    Calculate and return median NO2 sensor readings in PPM.
-    """
-    return np.median(data)
-
-def median_co2_ppm(data):
-    """
-    Calculate and return median CO2 sensor readings in PPM.
-    """
-    return np.median(data)
+    switch = {
+        'MOS': lambda data: np.median(data),
+        'NO': lambda data: np.median(data),
+        'CO': lambda data: np.median(data),
+        'OX': lambda data: np.median(data),
+        'NO2': lambda data: np.median(data),
+        'CO2': lambda data: np.median(data)
+        }
+    return switch[data_type](data)
 
 def init_plot(plot_window, plot_dict, plot_key, title):
     """
@@ -53,14 +30,13 @@ def init_plot(plot_window, plot_dict, plot_key, title):
     axis_items = {'bottom': pg.AxisItem(orientation='bottom',
                                         showValues=False),
                   'left': pg.AxisItem(orientation='left')}
-    plot_dict[plot_key] = plot_window.addPlot(title=title, axisItems=axis_items)
-    plot_dict[plot_key].plot(np.zeros(300),
-                             name=plot_key,
-                             pen={'color': 'g', 'width': 1})
+    bare_plot = plot_window.addPlot(title=title, axisItems=axis_items)
     if plot_key == 'MOS':
-        plot_dict[plot_key].setLabel(axis='left', text='Signal (mV)')
+        bare_plot.setLabel(axis='left', text='Signal (mV)')
     else:
-        plot_dict[plot_key].setLabel(axis='left', text='Concentration (PPM)')
+        bare_plot.setLabel(axis='left', text='Concentration (PPM)')
+    plot_dict[plot_key] = bare_plot.plot(np.zeros(300), name=plot_key,
+                                         pen={'color': 'g', 'width': 1})
 
 def update_plots():
     """
@@ -72,7 +48,7 @@ def update_plots():
         sys.stderr.write("ERROR: UNABLE TO OPEN DATA FILE\n")
         return None
 
-    last_data = deque(data_file, 1)[0].split(',')
+    last_data = [np.float64(datum) for datum in deque(data_file, 1)[0].split(',')]
     data_file.close()
 
     timestamp = last_data[0]
@@ -86,11 +62,18 @@ def update_plots():
         'CO2': last_data[33:38]
         }
 
-    for sensor_type, dq in DEQUES.items():
-        pass
+    for sensor_type, queue in DEQUES.items():
+        queue.append({
+            'x': timestamp,
+            'y': median(sensor_type, split_data[sensor_type])
+            })
+        PLOTS[sensor_type].setData(x=[item['x'] for item in queue],
+                                   y=[item['y'] for item in queue])
+    return None
 ################################################################################
 APP = pg.QtGui.QApplication([])
 WINDOW = pg.GraphicsWindow(title='Live Indoor AQ Data')
+WINDOW.showMaximized()
 pg.setConfigOptions(antialias=True)
 
 SENSOR_TYPES = ['MOS', 'NO', 'CO', 'OX', 'NO2', 'CO2']
@@ -106,9 +89,9 @@ for index, (key, value) in enumerate(PLOTS.items()):
     if index % 2 == 1:
         WINDOW.nextRow()
 
-#timer = pg.QtCore.QTimer()
-#timer.timeout.connect(update_plots)
-#timer.start(2000)
+TIMER = pg.QtCore.QTimer()
+TIMER.timeout.connect(update_plots)
+TIMER.start(2000)
 ################################################################################
 if __name__ == '__main__':
     if sys.flags.interactive != 1 or not hasattr(pg.QtCore, 'PYQT_VERSION'):
