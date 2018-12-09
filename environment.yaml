@@ -1,4 +1,4 @@
-name: aq_control
+name: bocs_control
 channels:
       - defaults
       - conda-forge
