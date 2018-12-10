@@ -52,7 +52,7 @@ def update_plots():
         date = dt.now()
         date_string = (f'{date.year}-{str(date.month).zfill(2)}-'
                        f'{str(date.day).zfill(2)}')
-        data_file = open(f'logs/SENSOR_ARRAY_1/{date_string}_data.log', 'r')
+        data_file = open(f'logs/SENSOR_ARRAY_1/SENSOR_ARRAY_1_{date_string}_data.log', 'r')
     except OSError:
         sys.stderr.write("ERROR: UNABLE TO OPEN DATA FILE\n")
         return None
