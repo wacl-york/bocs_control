@@ -52,6 +52,10 @@ class DataWriter(threading.Thread):
             err_string = (f"ERROR: DataWriter {self.name} UNABLE TO APPEND TO "
                           "DATA LOG\n")
             sys.stderr.write(err_string)
+        except ValueError:
+            err_string = ("ERROR: UNABLE TO DECODE DATE FROM INSTRUMENT "
+                          "TIMESTAMP\n") 
+            sys.stderr.write(err_string)
 
     def run(self):
         """
