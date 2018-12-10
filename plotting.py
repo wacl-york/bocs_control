@@ -14,12 +14,27 @@ def aggregate(data_type, data):
     """
     Calculate and return aggregate sensor value.
     """
+    def electrochem(data):
+        """
+        Apply appropriate transformation to electrochem data.
+        """
+        raw = [data[0] - data[1],
+               data[2] - data[3],
+               data[4] - data[5]]
+        return np.median(raw) * 0.0625
+
+    def co2(data):
+        """
+        Ditch useless 'CO2' data.
+        """
+        return np.median([data[0], data[2], data[4]])
+
     switch = {
         'MOS': lambda data: np.median(data) * 0.0625,
-        'NO': lambda data: np.median(data) * 0.0625,
-        'CO': lambda data: np.median(data) * 0.0625,
-        'OX': lambda data: np.median(data) * 0.0625,
-        'CO2': lambda data: np.median(data) * 0.0625
+        'NO': electrochem(data),
+        'CO': electrochem(data),
+        'OX': electrochem(data),
+        'CO2': co2(data)
         }
     return switch[data_type](data)
 
