@@ -35,9 +35,9 @@ def init_plot(plot_window, plot_dict, plot_key, title):
         bare_plot.setLabel(axis='left', text='Signal (mV)')
     else:
         bare_plot.setLabel(axis='left', text='Concentration (PPM)')
-    fill_values = (np.random.randint(0, 256),
-                   np.random.randint(0, 256),
-                   np.random.randint(0, 256),
+    fill_values = (np.random.randint(128, 256),
+                   np.random.randint(128, 256),
+                   np.random.randint(128, 256),
                    32)
     plot_dict[plot_key] = bare_plot.plot(np.zeros(100), name=plot_key,
                                          fillLevel=0,
