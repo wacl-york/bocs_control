@@ -10,16 +10,16 @@ import sys
 import numpy as np
 import pyqtgraph as pg
 ################################################################################
-def median(data_type, data):
+def aggregate(data_type, data):
     """
-    Calculate and return median sensor value.
+    Calculate and return aggregate sensor value.
     """
     switch = {
-        'MOS': lambda data: np.median(data),
-        'NO': lambda data: np.median(data),
-        'CO': lambda data: np.median(data),
-        'OX': lambda data: np.median(data),
-        'CO2': lambda data: np.median(data)
+        'MOS': lambda data: np.median(data) * 0.0625,
+        'NO': lambda data: np.median(data) * 0.0625,
+        'CO': lambda data: np.median(data) * 0.0625,
+        'OX': lambda data: np.median(data) * 0.0625,
+        'CO2': lambda data: np.median(data) * 0.0625
         }
     return switch[data_type](data)
 
@@ -73,7 +73,7 @@ def update_plots():
     for sensor_type, queue in DEQUES.items():
         queue.append({
             'x': timestamp,
-            'y': median(sensor_type, split_data[sensor_type])
+            'y': aggregate(sensor_type, split_data[sensor_type])
             })
         PLOTS[sensor_type].setData(x=[item['x'] for item in queue],
                                    y=[item['y'] for item in queue])
