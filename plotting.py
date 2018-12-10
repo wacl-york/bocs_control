@@ -10,19 +10,10 @@ import sys
 import numpy as np
 import pyqtgraph as pg
 ################################################################################
-def aggregate(data_type, data):
+def calibrate(data_type, data):
     """
-    Calculate and return aggregate sensor value.
+    Calculate and return calibrated sensor values.
     """
-    def electrochem(data):
-        """
-        Apply appropriate transformation to electrochem data.
-        """
-        raw = [data[0] - data[1],
-               data[2] - data[3],
-               data[4] - data[5]]
-        return np.median(raw) * 0.0625
-
     def co2(data):
         """
         Ditch useless 'CO2' data.
@@ -31,9 +22,9 @@ def aggregate(data_type, data):
 
     switch = {
         'MOS': lambda data: np.median(data) * 0.0625,
-        'NO': lambda data: electrochem(data),
-        'CO': lambda data: electrochem(data),
-        'OX': lambda data: electrochem(data),
+        'NO': lambda data: np.median(data) * 0.0625,
+        'CO': lambda data: np.median(data) * 0.0625,
+        'OX': lambda data: np.median(data) * 0.0625,
         'CO2': lambda data: co2(data)
         }
     return switch[data_type](data)
@@ -88,7 +79,7 @@ def update_plots():
     for sensor_type, queue in DEQUES.items():
         queue.append({
             'x': timestamp,
-            'y': aggregate(sensor_type, split_data[sensor_type])
+            'y': calibrate(sensor_type, split_data[sensor_type])
             })
         PLOTS[sensor_type].setData(x=[item['x'] for item in queue],
                                    y=[item['y'] for item in queue])
