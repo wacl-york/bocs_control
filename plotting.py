@@ -19,7 +19,6 @@ def median(data_type, data):
         'NO': lambda data: np.median(data),
         'CO': lambda data: np.median(data),
         'OX': lambda data: np.median(data),
-        'NO2': lambda data: np.median(data),
         'CO2': lambda data: np.median(data)
         }
     return switch[data_type](data)
@@ -68,8 +67,7 @@ def update_plots():
         'NO': last_data[9:14],
         'CO': last_data[15:20],
         'OX': last_data[21:26],
-        'NO2': last_data[27:32],
-        'CO2': last_data[33:38]
+        'CO2': last_data[27:32]
         }
 
     for sensor_type, queue in DEQUES.items():
@@ -86,7 +84,7 @@ WINDOW = pg.GraphicsWindow(title='Live Indoor AQ Data')
 WINDOW.showMaximized()
 pg.setConfigOptions(antialias=True)
 
-SENSOR_TYPES = ['MOS', 'NO', 'CO', 'OX', 'NO2', 'CO2']
+SENSOR_TYPES = ['MOS', 'NO', 'CO', 'OX', 'CO2']
 PLOTS = dict()
 DEQUES = dict()
 
