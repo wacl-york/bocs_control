@@ -31,10 +31,10 @@ def aggregate(data_type, data):
 
     switch = {
         'MOS': lambda data: np.median(data) * 0.0625,
-        'NO': electrochem(data),
-        'CO': electrochem(data),
-        'OX': electrochem(data),
-        'CO2': co2(data)
+        'NO': lambda data: electrochem(data),
+        'CO': lambda data: electrochem(data),
+        'OX': lambda data: electrochem(data),
+        'CO2': lambda data: co2(data)
         }
     return switch[data_type](data)
 
@@ -78,11 +78,11 @@ def update_plots():
     timestamp = last_data[0]
 
     split_data = {
-        'MOS': last_data[1:8],
-        'NO': last_data[9:14],
-        'CO': last_data[15:20],
-        'OX': last_data[21:26],
-        'CO2': last_data[27:32]
+        'MOS': last_data[1:9],
+        'NO': last_data[9:15],
+        'CO': last_data[15:21],
+        'OX': last_data[21:27],
+        'CO2': last_data[27:33]
         }
 
     for sensor_type, queue in DEQUES.items():
