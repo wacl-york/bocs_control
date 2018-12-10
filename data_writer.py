@@ -33,15 +33,15 @@ class DataWriter(threading.Thread):
 
     def write_data(self, data):
         """
-        Write data to the appropriate log file, decided by the passed type.
+        Write data to the appropriate log file, named by instrument name and
+        date.
         """
-        # TODO: FULLY IMPLEMENT THIS METHOD
         info_string = (f"INFO: DataWriter {self.name} WRITING DATA TO LOG FILE"
                        "\n")
         sys.stderr.write(info_string)
         try:
-            date = dt.now()
             id_string = (data.split(',')[0])
+            date = dt.utcfromtimestamp(int(data.split(',')[1]))
             date_string = (f'{date.year}-{str(date.month).zfill(2)}-'
                            f'{str(date.day).zfill(2)}')
             filename = f"{id_string}_{date_string}_data.log"
