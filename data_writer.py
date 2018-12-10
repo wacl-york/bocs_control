@@ -46,7 +46,7 @@ class DataWriter(threading.Thread):
                            f'{str(date.day).zfill(2)}')
             filename = f"{id_string}_{date_string}_data.log"
             with open(f"logs/{id_string}/{filename}", 'a') as data_log:
-                data_log.write(data)
+                data_log.write(data[1:])
         except OSError:
             # TODO: HANDLE INABILITY TO OPEN DATA LOG
             err_string = (f"ERROR: DataWriter {self.name} UNABLE TO APPEND TO "
