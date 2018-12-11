@@ -51,9 +51,9 @@ def calibrate(data_type, data):
         """
         Ditch useless 'CO2' data.
         """
-        return np.median([(1350 + (3500 * 1000 * data[0])),
-                          (1350 + (3500 * 1000 * data[2])),
-                          (1350 + (3500 * 1000 * data[4]))])
+        return np.median([(1350 + (3500 * data[0])) / 1000,
+                          (1350 + (3500 * data[2])) / 1000,
+                          (1350 + (3500 * data[4])) / 1000])
 
     switch = {
         'MOS':  mos,
