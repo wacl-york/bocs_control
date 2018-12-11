@@ -51,9 +51,9 @@ def calibrate(data_type, data):
         """
         Ditch useless 'CO2' data.
         """
-        return np.median([(1350 + (3500 * data[0])) / 1000,
-                          (1350 + (3500 * data[2])) / 1000,
-                          (1350 + (3500 * data[4])) / 1000])
+        return np.mean([(1350 + (3500 * data[0])) / 1000,
+                        (1350 + (3500 * data[2])) / 1000,
+                        (1350 + (3500 * data[4])) / 1000])
 
     switch = {
         'MOS':  mos,
@@ -74,6 +74,7 @@ def init_plot(plot_window, plot_dict, plot_key, title):
     bare_plot = plot_window.addPlot(title=title, axisItems=axis_items)
     if plot_key == 'MOS':
         bare_plot.setLabel(axis='left', text='mV')
+    
     else:
         bare_plot.setLabel(axis='left', text='PPB')
     fill_values = (np.random.randint(128, 256),
