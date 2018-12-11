@@ -27,25 +27,25 @@ def calibrate(data_type, data):
         """
         Return median calibrated NO sensor value.
         """
-        return np.median([(((data[0] - 225) - (data[1] - 245)) / 309) / 1000,
-                          (((data[2] - 225) - (data[3] - 245)) / 309) / 1000,
-                          (((data[4] - 225) - (data[5] - 245)) / 309) / 1000])
+        return np.median([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
+                          (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
+                          (((data[4] - 225) - (data[5] - 245)) / 309) * 1000])
 
     def co(data):
         """
         Return median calibrated CO sensor value.
         """
-        return np.median([(((data[0] - 270) - (data[1] - 340)) / 420) / 1000,
-                          (((data[2] - 270) - (data[3] - 340)) / 420) / 1000,
-                          (((data[4] - 270) - (data[5] - 340)) / 420) / 1000])
+        return np.median([(((data[0] - 270) - (data[1] - 340)) / 420) * 1000,
+                          (((data[2] - 270) - (data[3] - 340)) / 420) * 1000,
+                          (((data[4] - 270) - (data[5] - 340)) / 420) * 1000])
 
     def ox(data):
         """
         Return median calibrated Ox sensor value.
         """
-        return np.median([(((data[0] - 260) - (data[1] - 300)) / 298) / 1000,
-                          (((data[2] - 260) - (data[3] - 300)) / 298) / 1000,
-                          (((data[4] - 260) - (data[5] - 300)) / 298) / 1000])
+        return np.median([(((data[0] - 260) - (data[1] - 300)) / 298) * 1000,
+                          (((data[2] - 260) - (data[3] - 300)) / 298) * 1000,
+                          (((data[4] - 260) - (data[5] - 300)) / 298) * 1000])
 
     def co2(data):
         """
@@ -73,9 +73,9 @@ def init_plot(plot_window, plot_dict, plot_key, title):
                   'left': pg.AxisItem(orientation='left')}
     bare_plot = plot_window.addPlot(title=title, axisItems=axis_items)
     if plot_key == 'MOS':
-        bare_plot.setLabel(axis='left', text='Signal (mV)')
+        bare_plot.setLabel(axis='left', text='mV')
     else:
-        bare_plot.setLabel(axis='left', text='Concentration (PPM)')
+        bare_plot.setLabel(axis='left', text='PPB')
     fill_values = (np.random.randint(128, 256),
                    np.random.randint(128, 256),
                    np.random.randint(128, 256),
