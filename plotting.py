@@ -14,20 +14,55 @@ def calibrate(data_type, data):
     """
     Calculate and return calibrated sensor values.
     """
+    gain_scaled = list(map(lambda x: x * 0.0625, data))
+
+    def mos(data):
+        """
+        Return median scaled MOS sensor value.
+        """
+        return np.median(data) / 1000
+
+
+    def no(data):
+        """
+        Return median calibrated NO sensor value.
+        """
+        return np.median([(((data[0] - 225) - (data[1] - 245)) / 309) / 1000,
+                          (((data[2] - 225) - (data[3] - 245)) / 309) / 1000,
+                          (((data[4] - 225) - (data[5] - 245)) / 309) / 1000])
+
+    def co(data):
+        """
+        Return median calibrated CO sensor value.
+        """
+        return np.median([(((data[0] - 270) - (data[1] - 340)) / 420) / 1000,
+                          (((data[2] - 270) - (data[3] - 340)) / 420) / 1000,
+                          (((data[4] - 270) - (data[5] - 340)) / 420) / 1000])
+
+    def ox(data):
+        """
+        Return median calibrated Ox sensor value.
+        """
+        return np.median([(((data[0] - 260) - (data[1] - 300)) / 298) / 1000,
+                          (((data[2] - 260) - (data[3] - 300)) / 298) / 1000,
+                          (((data[4] - 260) - (data[5] - 300)) / 298) / 1000])
+
     def co2(data):
         """
         Ditch useless 'CO2' data.
         """
-        return np.median([data[0], data[2], data[4]])
+        return np.median([(1350 + (3500 * 1000 * data[0])),
+                          (1350 + (3500 * 1000 * data[2])),
+                          (1350 + (3500 * 1000 * data[4]))])
 
     switch = {
-        'MOS': lambda data: np.median(data) * 0.0625,
-        'NO': lambda data: np.median(data) * 0.0625,
-        'CO': lambda data: np.median(data) * 0.0625,
-        'OX': lambda data: np.median(data) * 0.0625,
-        'CO2': lambda data: co2(data)
+        'MOS':  mos,
+        'NO': no,
+        'CO': co,
+        'OX': ox,
+        'CO2': co2
         }
-    return switch[data_type](data)
+    return switch[data_type](gain_scaled)
 
 def init_plot(plot_window, plot_dict, plot_key, title):
     """
