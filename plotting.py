@@ -18,7 +18,7 @@ def calibrate(data_type, data):
 
     def mos(data):
         """
-        Return median scaled MOS sensor value.
+        Return median scaled VOC sensor value.
         """
         return np.median(data) / 1000
 
@@ -29,7 +29,7 @@ def calibrate(data_type, data):
         """
         return np.median([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
                           (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
-                          (((data[4] - 225) - (data[5] - 245)) / 309) * 1000])
+                          (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 70
 
     def co(data):
         """
@@ -37,7 +37,7 @@ def calibrate(data_type, data):
         """
         return np.median([(((data[0] - 270) - (data[1] - 340)) / 420) * 1000,
                           (((data[2] - 270) - (data[3] - 340)) / 420) * 1000,
-                          (((data[4] - 270) - (data[5] - 340)) / 420) * 1000])
+                          (((data[4] - 270) - (data[5] - 340)) / 420) * 1000]) - 200
 
     def ox(data):
         """
@@ -45,7 +45,7 @@ def calibrate(data_type, data):
         """
         return np.median([(((data[0] - 260) - (data[1] - 300)) / 298) * 1000,
                           (((data[2] - 260) - (data[3] - 300)) / 298) * 1000,
-                          (((data[4] - 260) - (data[5] - 300)) / 298) * 1000])
+                          (((data[4] - 260) - (data[5] - 300)) / 298) * 1000]) - 125
 
     def co2(data):
         """
@@ -56,7 +56,7 @@ def calibrate(data_type, data):
                         (1350 + (3500 * data[4])) / 1000])
 
     switch = {
-        'MOS':  mos,
+        'VOC':  mos,
         'NO': no,
         'CO': co,
         'OX': ox,
@@ -72,9 +72,10 @@ def init_plot(plot_window, plot_dict, plot_key, title):
                                         showValues=False),
                   'left': pg.AxisItem(orientation='left')}
     bare_plot = plot_window.addPlot(title=title, axisItems=axis_items)
-    if plot_key == 'MOS':
+    if plot_key == 'VOC':
         bare_plot.setLabel(axis='left', text='mV')
-    
+    elif plot_key == 'CO2':
+        bare_plot.setLabel(axis='left', text='PPM')
     else:
         bare_plot.setLabel(axis='left', text='PPB')
     fill_values = (np.random.randint(128, 256),
@@ -105,7 +106,7 @@ def update_plots():
     timestamp = last_data[0]
 
     split_data = {
-        'MOS': last_data[1:9],
+        'VOC': last_data[1:9],
         'NO': last_data[9:15],
         'CO': last_data[15:21],
         'OX': last_data[21:27],
@@ -126,7 +127,7 @@ WINDOW = pg.GraphicsWindow(title='Live Indoor AQ Data')
 WINDOW.showMaximized()
 pg.setConfigOptions(antialias=True)
 
-SENSOR_TYPES = ['MOS', 'NO', 'CO', 'OX', 'CO2']
+SENSOR_TYPES = ['VOC', 'NO', 'CO', 'OX', 'CO2']
 PLOTS = dict()
 DEQUES = dict()
 
