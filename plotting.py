@@ -5,6 +5,8 @@ Plot a window of incoming BOCS array data.
 ============================================================================="""
 from collections import deque
 from datetime import datetime as dt
+import glob
+import os
 import sys
 ################################################################################
 import numpy as np
@@ -92,10 +94,7 @@ def update_plots():
     Update all plots in the plotting window.
     """
     try:
-        date = dt.now()
-        date_string = (f'{date.year}-{str(date.month).zfill(2)}-'
-                       f'{str(date.day).zfill(2)}')
-        data_file = open(f'logs/SENSOR_ARRAY_1/SENSOR_ARRAY_1_{date_string}_data.log', 'r')
+        data_file = open(max(glob.glob('logs/SENSOR_ARRAY_1/*'), key=os.path.getctime))
     except OSError:
         sys.stderr.write("ERROR: UNABLE TO OPEN DATA FILE\n")
         return None
