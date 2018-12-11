@@ -29,7 +29,7 @@ def calibrate(data_type, data):
         """
         return np.mean([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
                         (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
-                        (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 70
+                        (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 75
 
     def co(data):
         """
@@ -45,7 +45,7 @@ def calibrate(data_type, data):
         """
         return np.mean([(((data[0] - 260) - (data[1] - 300)) / 298) * 1000,
                         (((data[2] - 260) - (data[3] - 300)) / 298) * 1000,
-                        (((data[4] - 260) - (data[5] - 300)) / 298) * 1000]) - 125
+                        (((data[4] - 260) - (data[5] - 300)) / 298) * 1000]) - 130
 
     def co2(data):
         """
@@ -73,7 +73,7 @@ def init_plot(plot_window, plot_dict, plot_key, title):
                   'left': pg.AxisItem(orientation='left')}
     bare_plot = plot_window.addPlot(title=title, axisItems=axis_items)
     if plot_key == 'VOC':
-        bare_plot.setLabel(axis='left', text='mV')
+        bare_plot.setLabel(axis='left', text='V')
     elif plot_key == 'CO2':
         bare_plot.setLabel(axis='left', text='PPM')
     else:
