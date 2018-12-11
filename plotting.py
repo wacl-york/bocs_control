@@ -64,6 +64,7 @@ def calibrate(data_type, data):
         'OX': ox,
         'CO2': co2
         }
+
     return switch[data_type](gain_scaled)
 
 def init_plot(plot_window, plot_dict, plot_key, title):
@@ -113,12 +114,17 @@ def update_plots():
         }
 
     for sensor_type, queue in DEQUES.items():
-        queue.append({
-            'x': timestamp,
-            'y': calibrate(sensor_type, split_data[sensor_type])
-            })
-        PLOTS[sensor_type].setData(x=[item['x'] for item in queue],
-                                   y=[item['y'] for item in queue])
+        try:
+            queue.append({
+                'x': timestamp,
+                'y': calibrate(sensor_type, split_data[sensor_type])
+                })
+            PLOTS[sensor_type].setData(x=[item['x'] for item in queue],
+                                       y=[item['y'] for item in queue])
+        except IndexError:
+            err_string = ('ERROR: UNABLE TO UPDATE PLOT THIS TIMESTEP, '
+                          'ATTEMPTING TO CONTINUE\n')
+            sys.stderr.write(err_string)
     return None
 ################################################################################
 APP = pg.QtGui.QApplication([])
