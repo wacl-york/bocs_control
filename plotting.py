@@ -125,6 +125,7 @@ def update_plots():
 APP = pg.QtGui.QApplication([])
 WINDOW = pg.GraphicsWindow(title='Live Indoor AQ Data')
 WINDOW.showMaximized()
+WINDOW.setWindowFlags(pg.Qt.FramelessWindowHint)
 pg.setConfigOptions(antialias=True)
 
 SENSOR_TYPES = ['VOC', 'NO', 'CO', 'OX', 'CO2']
