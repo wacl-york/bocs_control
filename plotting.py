@@ -16,7 +16,7 @@ def calibrate(data_type, data):
     """
     gain_scaled = list(map(lambda x: x * 0.0625, data))
 
-    def mos(data):
+    def voc(data):
         """
         Return median scaled VOC sensor value.
         """
@@ -27,9 +27,9 @@ def calibrate(data_type, data):
         """
         Return median calibrated NO sensor value.
         """
-        return np.median([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
-                          (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
-                          (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 70
+        return np.mean([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
+                        (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
+                        (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 70
 
     def co(data):
         """
@@ -43,9 +43,9 @@ def calibrate(data_type, data):
         """
         Return median calibrated Ox sensor value.
         """
-        return np.median([(((data[0] - 260) - (data[1] - 300)) / 298) * 1000,
-                          (((data[2] - 260) - (data[3] - 300)) / 298) * 1000,
-                          (((data[4] - 260) - (data[5] - 300)) / 298) * 1000]) - 125
+        return np.mean([(((data[0] - 260) - (data[1] - 300)) / 298) * 1000,
+                        (((data[2] - 260) - (data[3] - 300)) / 298) * 1000,
+                        (((data[4] - 260) - (data[5] - 300)) / 298) * 1000]) - 125
 
     def co2(data):
         """
@@ -56,7 +56,7 @@ def calibrate(data_type, data):
                         (1350 + (3500 * data[4])) / 1000])
 
     switch = {
-        'VOC':  mos,
+        'VOC':  voc,
         'NO': no,
         'CO': co,
         'OX': ox,
