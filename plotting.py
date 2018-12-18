@@ -33,6 +33,14 @@ def calibrate(data_type, data):
                         (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
                         (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 75
 
+    def no2(data):
+        """
+        Return median calibrated NO2 sensor value.
+        """
+        return np.mean([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
+                        (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
+                        (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 75
+
     def co(data):
         """
         Return median calibrated CO sensor value.
@@ -62,6 +70,7 @@ def calibrate(data_type, data):
         'NO': no,
         'CO': co,
         'OX': ox,
+        'NO2': no2,
         'CO2': co2
         }
 
@@ -110,7 +119,8 @@ def update_plots():
         'NO': last_data[9:15],
         'CO': last_data[15:21],
         'OX': last_data[21:27],
-        'CO2': last_data[27:33]
+        'NO2': last_data[27:33],
+        'CO2': last_data[33:39]
         }
 
     for sensor_type, queue in DEQUES.items():
@@ -132,7 +142,7 @@ WINDOW = pg.GraphicsWindow(title='Live Indoor AQ Data')
 WINDOW.showMaximized()
 pg.setConfigOptions(antialias=True)
 
-SENSOR_TYPES = ['VOC', 'NO', 'CO', 'OX', 'CO2']
+SENSOR_TYPES = ['VOC', 'NO', 'CO', 'OX', 'NO2', 'CO2']
 PLOTS = dict()
 DEQUES = dict()
 
