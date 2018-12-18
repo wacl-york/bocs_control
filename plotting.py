@@ -29,7 +29,7 @@ def calibrate(data_type, data):
         """
         Return median calibrated NO sensor value.
         """
-        return np.mean([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
+        return np.median([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
                         (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
                         (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 75
 
@@ -37,7 +37,7 @@ def calibrate(data_type, data):
         """
         Return median calibrated NO2 sensor value.
         """
-        return np.mean([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
+        return np.median([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
                         (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
                         (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 75
 
@@ -53,7 +53,7 @@ def calibrate(data_type, data):
         """
         Return median calibrated Ox sensor value.
         """
-        return np.mean([(((data[0] - 260) - (data[1] - 300)) / 298) * 1000,
+        return np.median([(((data[0] - 260) - (data[1] - 300)) / 298) * 1000,
                         (((data[2] - 260) - (data[3] - 300)) / 298) * 1000,
                         (((data[4] - 260) - (data[5] - 300)) / 298) * 1000]) - 130
 
@@ -61,7 +61,7 @@ def calibrate(data_type, data):
         """
         Ditch useless 'CO2' data.
         """
-        return np.mean([(1350 + (3500 * data[0])) / 1000,
+        return np.median([(1350 + (3500 * data[0])) / 1000,
                         (1350 + (3500 * data[2])) / 1000,
                         (1350 + (3500 * data[4])) / 1000])
 
