@@ -31,7 +31,7 @@ def calibrate(data_type, data):
         """
         return np.median([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
                         (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
-                        (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 75
+                        (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 72
 
     def no2(data):
         """
@@ -39,7 +39,7 @@ def calibrate(data_type, data):
         """
         return np.median([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
                         (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
-                        (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 75
+                        (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 100
 
     def co(data):
         """
@@ -55,7 +55,7 @@ def calibrate(data_type, data):
         """
         return np.median([(((data[0] - 260) - (data[1] - 300)) / 298) * 1000,
                         (((data[2] - 260) - (data[3] - 300)) / 298) * 1000,
-                        (((data[4] - 260) - (data[5] - 300)) / 298) * 1000]) - 130
+                        (((data[4] - 260) - (data[5] - 300)) / 298) * 1000]) - 135
 
     def co2(data):
         """
