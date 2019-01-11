@@ -4,7 +4,6 @@ plotting
 Plot a window of incoming BOCS array data.
 ============================================================================="""
 from collections import deque
-from datetime import datetime as dt
 import glob
 import os
 import sys
@@ -30,16 +29,16 @@ def calibrate(data_type, data):
         Return median calibrated NO sensor value.
         """
         return np.median([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
-                        (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
-                        (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 72
+                          (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
+                          (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 72
 
     def no2(data):
         """
         Return median calibrated NO2 sensor value.
         """
         return np.median([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
-                        (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
-                        (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 100
+                          (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
+                          (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 100
 
     def co(data):
         """
@@ -54,16 +53,16 @@ def calibrate(data_type, data):
         Return median calibrated Ox sensor value.
         """
         return np.median([(((data[0] - 260) - (data[1] - 300)) / 298) * 1000,
-                        (((data[2] - 260) - (data[3] - 300)) / 298) * 1000,
-                        (((data[4] - 260) - (data[5] - 300)) / 298) * 1000]) - 135
+                          (((data[2] - 260) - (data[3] - 300)) / 298) * 1000,
+                          (((data[4] - 260) - (data[5] - 300)) / 298) * 1000]) - 135
 
     def co2(data):
         """
         Ditch useless 'CO2' data.
         """
         return np.median([(1350 + (3500 * data[0])) / 1000,
-                        (1350 + (3500 * data[2])) / 1000,
-                        (1350 + (3500 * data[4])) / 1000])
+                          (1350 + (3500 * data[2])) / 1000,
+                          (1350 + (3500 * data[4])) / 1000])
 
     switch = {
         'VOC':  voc,
@@ -114,13 +113,21 @@ def update_plots():
 
     timestamp = last_data[0]
 
+#    split_data = {
+#        'VOC': last_data[1:9],
+#        'NO': last_data[9:15],
+#        'CO': last_data[15:21],
+#        'OX': last_data[21:27],
+#        'NO2': last_data[27:33],
+#        'CO2': last_data[33:39]
+#        }
+
     split_data = {
-        'VOC': last_data[1:9],
-        'NO': last_data[9:15],
-        'CO': last_data[15:21],
-        'OX': last_data[21:27],
-        'NO2': last_data[27:33],
-        'CO2': last_data[33:39]
+        'NO': last_data[1:7],
+        'CO': last_data[7:13],
+        'OX': last_data[13:18],
+        'NO2': last_data[18:23],
+        'CO2': last_data[23:29]
         }
 
     for sensor_type, queue in DEQUES.items():
@@ -142,7 +149,8 @@ WINDOW = pg.GraphicsWindow(title='Live Indoor AQ Data')
 WINDOW.showMaximized()
 pg.setConfigOptions(antialias=True)
 
-SENSOR_TYPES = ['VOC', 'NO', 'CO', 'OX', 'NO2', 'CO2']
+#SENSOR_TYPES = ['VOC', 'NO', 'CO', 'OX', 'NO2', 'CO2']
+SENSOR_TYPES = ['NO', 'CO', 'OX', 'NO2', 'CO2']
 PLOTS = dict()
 DEQUES = dict()
 
