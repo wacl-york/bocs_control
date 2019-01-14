@@ -106,6 +106,7 @@ def update_plots():
         data_file = open(max(glob.glob('logs/SENSOR_ARRAY_1/*'), key=os.path.getctime))
     except OSError:
         sys.stderr.write("ERROR: UNABLE TO OPEN DATA FILE\n")
+        sys.stderr.flush()
         return None
 
     last_data = [np.float64(datum) for datum in deque(data_file, 1)[0].split(',')]
@@ -125,9 +126,9 @@ def update_plots():
     split_data = {
         'NO': last_data[1:7],
         'CO': last_data[7:13],
-        'OX': last_data[13:18],
-        'NO2': last_data[18:23],
-        'CO2': last_data[23:29]
+        'OX': last_data[13:19],
+        'NO2': last_data[19:25],
+        'CO2': last_data[25:31]
         }
 
     for sensor_type, queue in DEQUES.items():
@@ -139,9 +140,10 @@ def update_plots():
             PLOTS[sensor_type].setData(x=[item['x'] for item in queue],
                                        y=[item['y'] for item in queue])
         except IndexError:
-            err_string = ('ERROR: UNABLE TO UPDATE PLOT THIS TIMESTEP, '
-                          'ATTEMPTING TO CONTINUE\n')
+            err_string = (f'ERROR: UNABLE TO UPDATE {sensor_type} PLOT THIS '
+                          'TIMESTEP, ATTEMPTING TO CONTINUE\n')
             sys.stderr.write(err_string)
+            sys.stderr.flush()
     return None
 ################################################################################
 APP = pg.QtGui.QApplication([])
