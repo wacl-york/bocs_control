@@ -13,7 +13,7 @@ def main():
     Main entry point for the program.
     """
     global_queue = queue.Queue()
-    instrument_names = ['SENSOR_ARRAY_1']
+    instrument_names = ['SENSOR_ARRAY_1', 'SENSOR_ARRAY_2']
     reader_threads = [None] * len(instrument_names)
 
     for index, instrument_name in enumerate(instrument_names):

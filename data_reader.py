@@ -100,11 +100,20 @@ class DataReader(threading.Thread):
                        "SHARED QUEUE\n")
         sys.stderr.write(info_string)
         sys.stderr.write(f"INFO: QUEUE IS NOW SIZE {self.queue.qsize()}\n")
-        self.queue.put(f"{self.port_name[5:]},{data.decode()}", block=True)
+        try:
+            self.queue.put(f"{self.port_name[5:]},{data.decode()}", block=True)
+        except UnicodeDecodeError as exception:
+            raise UnicodeDecodeError from exception
 
     def run(self):
         """
         Main entry point for DataReader threads.
         """
         while True:
-            self.enqueue_data(self.read_data_line())
+            try:
+                self.enqueue_data(self.read_data_line())
+            except UnicodeDecodeError as exception:
+                err_string = (f"INFO: DataReader {self.name} CAUGHT SOME "
+                              "GARBAGE; IGNORING DATA LINE\n")
+                sys.stderr.write(err_string)
+                continue
