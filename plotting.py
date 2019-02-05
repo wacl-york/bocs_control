@@ -114,21 +114,13 @@ def update_plots():
 
     timestamp = last_data[0]
 
-#    split_data = {
-#        'VOC': last_data[1:9],
-#        'NO': last_data[9:15],
-#        'CO': last_data[15:21],
-#        'OX': last_data[21:27],
-#        'NO2': last_data[27:33],
-#        'CO2': last_data[33:39]
-#        }
-
     split_data = {
-        'NO': last_data[1:7],
-        'CO': last_data[7:13],
-        'OX': last_data[13:19],
-        'NO2': last_data[19:25],
-        'CO2': last_data[25:31]
+        'VOC': last_data[1:9],
+        'NO': last_data[9:15],
+        'CO': last_data[15:21],
+        'OX': last_data[21:27],
+        'NO2': last_data[27:33],
+        'CO2': last_data[33:39]
         }
 
     for sensor_type, queue in DEQUES.items():
@@ -151,8 +143,7 @@ WINDOW = pg.GraphicsWindow(title='Live Indoor AQ Data')
 WINDOW.showMaximized()
 pg.setConfigOptions(antialias=True)
 
-#SENSOR_TYPES = ['VOC', 'NO', 'CO', 'OX', 'NO2', 'CO2']
-SENSOR_TYPES = ['NO', 'CO', 'OX', 'NO2', 'CO2']
+SENSOR_TYPES = ['VOC', 'NO', 'CO', 'OX', 'NO2', 'CO2']
 PLOTS = dict()
 DEQUES = dict()
 
