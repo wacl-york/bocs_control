@@ -100,10 +100,7 @@ class DataReader(threading.Thread):
                        "SHARED QUEUE\n")
         sys.stderr.write(info_string)
         sys.stderr.write(f"INFO: QUEUE IS NOW SIZE {self.queue.qsize()}\n")
-        try:
-            self.queue.put(f"{self.port_name[5:]},{data.decode()}", block=True)
-        except UnicodeDecodeError as exception:
-            raise UnicodeDecodeError from exception
+        self.queue.put(f"{self.port_name[5:]},{data.decode()}", block=True)
 
     def run(self):
         """
