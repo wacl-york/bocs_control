@@ -17,7 +17,7 @@ def main():
     reader_threads = [None] * len(instrument_names)
 
     for index, instrument_name in enumerate(instrument_names):
-        reader_threads[index] = dr.DataReader(f'instrument_name',
+        reader_threads[index] = dr.DataReader(f'{instrument_name}',
                                               f'/dev/{instrument_name}',
                                               global_queue)
 
