@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 ################################################################################
-# run_control
+# run_upload
 #===============================================================================
 #
 ################################################################################
 WORKDIR="$(readlink -f "$(dirname "${0}")")"
 LOGDIR="${WORKDIR}/logs"
-LOGFILE="${LOGDIR}/control.log"
+LOGFILE="${LOGDIR}/upload.log"
 PYTHON="$(command -v python3)"
+SITE="aviva"
 
-${PYTHON} "${WORKDIR}/control.py" > "${LOGFILE}" 2>&1
+for i in {1..2}; do
+  ${PYTHON} "${WORKDIR}/upload.py" "${SITE}" "${LOGDIR}/SENSOR_ARRAY_${i}" > "${LOGFILE}" 2>&1

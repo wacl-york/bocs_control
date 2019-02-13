@@ -5,6 +5,7 @@ AWS S3 Bucket Upload
 This requires AWS credentials to be set up in the user home directory.
 #############################################################################"""
 import argparse
+import gzip
 import os
 import sys
 #===============================================================================
@@ -22,6 +23,16 @@ def get_script_args():
     arg_parser.add_argument('data_directory', metavar='data_directory', nargs=1,
                             type=str, help=help_string)
     return arg_parser.parse_args()
+
+def compress_file(filename):
+    """
+    gzip the file that we are going to transfer to S3.
+    """
+    outfile_name = f'{filename}.gz'
+    with open(filename, 'rb') as infile, gzip.open(outfile_name, 'wb') as outfile:
+        outfile.writelines(infile)
+
+    return outfile_name
 
 def file_to_upload(directory):
     """
@@ -42,17 +53,17 @@ def main():
     script_args = get_script_args()
 
     profile_name = f'bocs-remote-uploads-{script_args.site_name[0]}'
-    upfile_name = file_to_upload(script_args.data_directory[0])
+    upfile_name = compress_file(file_to_upload(script_args.data_directory[0]))
     object_key = os.path.join(script_args.site_name[0],
                               os.path.basename(upfile_name))
     info_string = (f"INFO: UPLOADING {upfile_name} TO {object_key} IN BUCKET\n")
     sys.stderr.write(info_string)
 
     session = boto3.session.Session(profile_name=profile_name)
-    s3 = session.resource('s3')
+    sss = session.resource('s3')
 
-    s3.Bucket('bocs-remote-uploads').upload_file(upfile_name,
-                                                 object_key)
+    sss.Bucket('bocs-remote-uploads').upload_file(upfile_name,
+                                                  object_key)
 
     exit(0)
 #===============================================================================
