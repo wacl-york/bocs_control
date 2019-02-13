@@ -36,13 +36,13 @@ def compress_file(filename):
 
 def file_to_upload(directory):
     """
-    Get the second to last most recently modified file from directory, as this
-    will be the file to upload.
+    Get the file in directory whose name is second in descending filename
+    numerical order.
     """
     absolute_directory = os.path.abspath(directory)
     directory_contents = [os.path.join(absolute_directory, filename)
                           for filename in os.listdir(absolute_directory)]
-    directory_contents.sort(key=os.path.getmtime, reverse=True)
+    directory_contents.sort(reverse=True)
 
     return directory_contents[1]
 #===============================================================================
