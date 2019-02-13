@@ -7,7 +7,7 @@
 WORKDIR="$(readlink -f "$(dirname "${0}")")"
 LOGDIR="${WORKDIR}/logs"
 LOGFILE="${LOGDIR}/upload.log"
-PYTHON="$(command -v python3)"
+PYTHON="/opt/python/3.7.1/bin/python3"
 SITE="aviva"
 
 for i in {1..2}; do
