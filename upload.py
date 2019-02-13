@@ -28,7 +28,9 @@ def file_to_upload(directory):
     Get the second to last most recently modified file from directory, as this
     will be the file to upload.
     """
-    directory_contents = os.listdir(os.path.abspath(directory))
+    absolute_directory = os.path.abspath(directory)
+    directory_contents = [os.path.join(absolute_directory, filename)
+                          for filename in os.listdir(absolute_directory)]
     directory_contents.sort(key=os.path.getmtime, reverse=True)
 
     return directory_contents[1]
@@ -40,14 +42,17 @@ def main():
     script_args = get_script_args()
 
     profile_name = f'bocs-remote-uploads-{script_args.site_name[0]}'
-    object_key = (f'{script_args.site_name[0]}/'
-                  f'{file_to_upload(script_args.data_directory[0])}')
-    sys.stderr.write(f"INFO: UPLOADING {object_key} TO BUCKET\n")
+    upfile_name = file_to_upload(script_args.data_directory[0])
+    object_key = os.path.join(script_args.site_name[0],
+                              os.path.basename(upfile_name))
+    info_string = (f"INFO: UPLOADING {upfile_name} TO {object_key} IN BUCKET\n")
+    sys.stderr.write(info_string)
 
     session = boto3.session.Session(profile_name=profile_name)
     s3 = session.resource('s3')
 
-    s3.Bucket('bocs-remote-uploads').put_object(Key=object_key)
+    s3.Bucket('bocs-remote-uploads').upload_file(upfile_name,
+                                                 object_key)
 
     exit(0)
 #===============================================================================
