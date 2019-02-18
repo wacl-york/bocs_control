@@ -5,6 +5,7 @@ DataWriter CLASS
 ============================================================================="""
 from datetime import datetime as dt
 import os
+import re
 import sys
 import threading
 #===============================================================================
@@ -40,13 +41,19 @@ class DataWriter(threading.Thread):
                        "\n")
         sys.stderr.write(info_string)
         try:
-            id_string = (data.split(',')[0])
-            date = dt.utcfromtimestamp(int(data.split(',')[1]))
-            date_string = (f'{date.year}-{str(date.month).zfill(2)}-'
-                           f'{str(date.day).zfill(2)}')
-            filename = f"{id_string}_{date_string}_data.log"
-            with open(f"logs/{id_string}/{filename}", 'a') as data_log:
-                data_log.write(','.join(data.split(',')[1:]))
+            data_fields = data.split(',')
+            id_string = (data_fields[0])
+            if re.match('ERROR', data_fields[1]):
+                filename = f"{id_string}_error.log"
+                with open(f"logs/{id_string}/{filename}", 'a') as data_log:
+                    data_log.write(data_fields[1])
+            else:
+                date = dt.utcfromtimestamp(int(data_fields[1]))
+                date_string = (f'{date.year}-{str(date.month).zfill(2)}-'
+                               f'{str(date.day).zfill(2)}')
+                filename = f"{id_string}_{date_string}_data.log"
+                with open(f"logs/{id_string}/{filename}", 'a') as data_log:
+                    data_log.write(','.join(data_fields[1:]))
         except OSError:
             # TODO: HANDLE INABILITY TO OPEN DATA LOG
             err_string = (f"ERROR: DataWriter {self.name} UNABLE TO APPEND TO "
