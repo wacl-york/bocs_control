@@ -8,7 +8,7 @@ WORKDIR="$(readlink -f "$(dirname "${0}")")"
 LOGDIR="${WORKDIR}/logs"
 LOGFILE="${LOGDIR}/upload.log"
 PYTHON="/opt/python/3.7.1/bin/python3"
-SITE="aviva"
+SITE="birmingham"
 
 cd "${WORKDIR}" || exit 1
 for i in {1..2}; do

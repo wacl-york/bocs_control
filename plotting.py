@@ -30,7 +30,7 @@ def calibrate(data_type, data):
         """
         return np.median([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
                           (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
-                          (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 72
+                          (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) + 276
 
     def no2(data):
         """
@@ -38,7 +38,7 @@ def calibrate(data_type, data):
         """
         return np.median([(((data[0] - 225) - (data[1] - 245)) / 309) * 1000,
                           (((data[2] - 225) - (data[3] - 245)) / 309) * 1000,
-                          (((data[4] - 225) - (data[5] - 245)) / 309) * 1000]) - 100
+                          (((data[4] - 225) - (data[5] - 245)) / 309) * 1000])
 
     def co(data):
         """
@@ -46,7 +46,7 @@ def calibrate(data_type, data):
         """
         return np.median([(((data[0] - 270) - (data[1] - 340)) / 420) * 1000,
                           (((data[2] - 270) - (data[3] - 340)) / 420) * 1000,
-                          (((data[4] - 270) - (data[5] - 340)) / 420) * 1000]) - 200
+                          (((data[4] - 270) - (data[5] - 340)) / 420) * 1000]) ++ 1660
 
     def ox(data):
         """
@@ -54,7 +54,7 @@ def calibrate(data_type, data):
         """
         return np.median([(((data[0] - 260) - (data[1] - 300)) / 298) * 1000,
                           (((data[2] - 260) - (data[3] - 300)) / 298) * 1000,
-                          (((data[4] - 260) - (data[5] - 300)) / 298) * 1000]) - 135
+                          (((data[4] - 260) - (data[5] - 300)) / 298) * 1000]) - 100
 
     def co2(data):
         """
@@ -62,15 +62,15 @@ def calibrate(data_type, data):
         """
         return np.median([(1350 + (3500 * data[0])) / 1000,
                           (1350 + (3500 * data[2])) / 1000,
-                          (1350 + (3500 * data[4])) / 1000])
+                          (1350 + (3500 * data[4])) / 1000]) + 370
 
     switch = {
         'VOC':  voc,
         'NO': no,
         'CO': co,
         'OX': ox,
-        'NO2': no2,
-        'CO2': co2
+        'NO2': co2,
+        'CO2': no2
         }
 
     return switch[data_type](gain_scaled)
@@ -103,7 +103,7 @@ def update_plots():
     Update all plots in the plotting window.
     """
     try:
-        data_file = open(max(glob.glob('logs/SENSOR_ARRAY_1/*'), key=os.path.getctime))
+        data_file = open(max(glob.glob('logs/SENSOR_ARRAY_2/*'), key=os.path.getctime))
     except OSError:
         sys.stderr.write("ERROR: UNABLE TO OPEN DATA FILE\n")
         sys.stderr.flush()
@@ -119,8 +119,8 @@ def update_plots():
         'NO': last_data[9:15],
         'CO': last_data[15:21],
         'OX': last_data[21:27],
-        'NO2': last_data[27:33],
-        'CO2': last_data[33:39]
+        'NO2': last_data[33:39],
+        'CO2': last_data[27:33]
         }
 
     for sensor_type, queue in DEQUES.items():
