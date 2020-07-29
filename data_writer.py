@@ -17,7 +17,7 @@ class DataWriter(threading.Thread):
     """
     def __init__(self, name, shared_queue, instrument_names):
         threading.Thread.__init__(self)
-        sys.stderr.write(f"INFO: DataWriter {name} INITIALISING\n")
+        sys.stderr.write(f"[{dt.now().__str__()}] INFO: DataWriter {name} INITIALISING\n")
         self.name = name
         self.queue = shared_queue
         create_log_directories(instrument_names)
@@ -28,8 +28,8 @@ class DataWriter(threading.Thread):
         """
         # TODO: MODIFY CALL TO queue.get TO INCORPORATE A SUITABLE TIMEOUT,
         # BASED ON ATTACHED INSTRUMENT RESPONSE TIMES
-        sys.stderr.write(f"INFO: DataWriter {self.name} DEQUEUEING DATA\n")
-        sys.stderr.write(f"INFO: QUEUE SIZE IS NOW {self.queue.qsize()}\n")
+        sys.stderr.write(f"[{dt.now().__str__()}] INFO: DataWriter {self.name} DEQUEUEING DATA\n")
+        sys.stderr.write(f"[{dt.now().__str__()}] INFO: QUEUE SIZE IS NOW {self.queue.qsize()}\n")
         return self.queue.get(block=True, timeout=None)
 
     def write_data(self, data):
@@ -37,7 +37,7 @@ class DataWriter(threading.Thread):
         Write data to the appropriate log file, named by instrument name and
         date.
         """
-        info_string = (f"INFO: DataWriter {self.name} WRITING DATA TO LOG FILE"
+        info_string = (f"[{dt.now().__str__()}] INFO: DataWriter {self.name} WRITING DATA TO LOG FILE"
                        "\n")
         sys.stderr.write(info_string)
         try:
@@ -56,11 +56,11 @@ class DataWriter(threading.Thread):
                     data_log.write(','.join(data_fields[1:]))
         except OSError:
             # TODO: HANDLE INABILITY TO OPEN DATA LOG
-            err_string = (f"ERROR: DataWriter {self.name} UNABLE TO APPEND TO "
+            err_string = (f"[{dt.now().__str__()}] ERROR: DataWriter {self.name} UNABLE TO APPEND TO "
                           "DATA LOG\n")
             sys.stderr.write(err_string)
         except ValueError:
-            err_string = ("ERROR: UNABLE TO DECODE DATE FROM INSTRUMENT "
+            err_string = ("[{dt.now().__str__()}] ERROR: UNABLE TO DECODE DATE FROM INSTRUMENT "
                           "TIMESTAMP\n") 
             sys.stderr.write(err_string)
 
@@ -78,13 +78,13 @@ def create_log_directories(instrument_names):
     for instrument_name in instrument_names:
         log_directory = f'logs/{instrument_name}'
         if not os.path.isdir(log_directory):
-            info_string = (f'INFO: LOG DIRECTORY FOR INSTRUMENT {instrument_name}'
+            info_string = (f'[{dt.now().__str__()}] INFO: LOG DIRECTORY FOR INSTRUMENT {instrument_name}'
                            ' DOES NOT EXIST - CREATING\n')
             sys.stderr.write(info_string)
             try:
                 os.makedirs(log_directory)
             except OSError:
                 # TODO: HANDLE NOT BEING ABLE TO CREATE LOG FILE
-                err_string = ('ERROR: UNABLE TO CREATE LOG DIRECTORY FOR'
+                err_string = ('[{dt.now().__str__()}] ERROR: UNABLE TO CREATE LOG DIRECTORY FOR'
                               f' INSTRUMENT {instrument_name}\n')
                 sys.stderr.write(err_string)
