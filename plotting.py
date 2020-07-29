@@ -103,7 +103,7 @@ def update_plots():
     Update all plots in the plotting window.
     """
     try:
-        data_file = open(max(glob.glob('logs/SENSOR_ARRAY_2/*'), key=os.path.getctime))
+        data_file = open(max(glob.glob('logs/SENSOR_ARRAY_A/*'), key=os.path.getctime))
     except OSError:
         sys.stderr.write("ERROR: UNABLE TO OPEN DATA FILE\n")
         sys.stderr.flush()
