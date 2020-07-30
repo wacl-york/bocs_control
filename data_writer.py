@@ -60,7 +60,7 @@ class DataWriter(threading.Thread):
                           "DATA LOG\n")
             sys.stderr.write(err_string)
         except ValueError:
-            err_string = ("[{dt.now().__str__()}] ERROR: UNABLE TO DECODE DATE FROM INSTRUMENT "
+            err_string = (f"[{dt.now().__str__()}] ERROR: UNABLE TO DECODE DATE FROM INSTRUMENT "
                           "TIMESTAMP\n") 
             sys.stderr.write(err_string)
 

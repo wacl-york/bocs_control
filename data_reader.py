@@ -3,6 +3,7 @@ DataReader CLASS
 --------------------------------------------------------------------------------
 
 ============================================================================="""
+from datetime import datetime as dt
 import sys
 import threading
 
@@ -18,7 +19,7 @@ class DataReader(threading.Thread):
     """
     def __init__(self, name, port_name, shared_queue):
         threading.Thread.__init__(self)
-        err_string = (f"INFO: DataReader {name} INITIALISING WITH PORT NAME"
+        err_string = (f"[{dt.now().__str__()}] INFO: DataReader {name} INITIALISING WITH PORT NAME"
                       f" {port_name}\n")
         sys.stderr.write(err_string)
         self.name = name
@@ -26,36 +27,36 @@ class DataReader(threading.Thread):
         self.queue = shared_queue
 
         try:
-            info_string = (f"INFO: DataReader {self.name} CHECKING PORT "
+            info_string = (f"[{dt.now().__str__()}] INFO: DataReader {self.name} CHECKING PORT "
                            f"{self.port_name} AVAILABILITY\n")
             sys.stderr.write(info_string)
             self.check_port_available()
         except serialutil.SerialException:
             # TODO: HANDLE PORT UNAVAILABLE
-            err_string = (f"ERROR: DataReader {self.name} THINKS PORT "
+            err_string = (f"[{dt.now().__str__()}] ERROR: DataReader {self.name} THINKS PORT "
                           f"{self.port_name} IS UNAVAILABLE\n")
             sys.stderr.write(err_string)
 
         try:
-            info_string = (f"INFO: DataReader {self.name} CHECKING PORT "
+            info_string = (f"[{dt.now().__str__()}] INFO: DataReader {self.name} CHECKING PORT "
                            f"{self.port_name} FUNCTIONALITY\n")
             sys.stderr.write(info_string)
             self.check_port_function()
         except serialutil.SerialException:
             # TODO: HANDLE INCORRECT PORT FUNCTION
-            err_string = (f"ERROR: DataReader {self.name} THINKS PORT "
+            err_string = (f"[{dt.now().__str__()}] ERROR: DataReader {self.name} THINKS PORT "
                           f"{self.port_name} IS MALFUNCTIONING\n")
             sys.stderr.write(err_string)
 
         try:
-            info_string = (f"INFO: DataReader {self.name} OPENING PORT "
+            info_string = (f"[{dt.now().__str__()}] INFO: DataReader {self.name} OPENING PORT "
                            f"{self.port_name} FOR READ\n")
             sys.stderr.write(info_string)
             self.port = serial.Serial(self.port_name, 9600, timeout=1)
             self.port.reset_input_buffer()
         except serialutil.SerialException:
             # TODO: HANDLE PORT NOT OPENABLE EXCEPTION
-            err_string = (f"ERROR: DataReader {self.name} CAN'T OPEN "
+            err_string = (f"[{dt.now().__str__()}] ERROR: DataReader {self.name} CAN'T OPEN "
                           f"{self.port_name} FOR READ\n")
             sys.stderr.write(err_string)
 
@@ -85,7 +86,7 @@ class DataReader(threading.Thread):
         """
         Read and return a line of attached instrument data.
         """
-        info_string = (f"INFO: DataReader {self.name} READING DATA FROM "
+        info_string = (f"[{dt.now().__str__()}] INFO: DataReader {self.name} READING DATA FROM "
                        f"{self.port_name}\n")
         sys.stderr.write(info_string)
         data = self.port.readline()
@@ -96,10 +97,10 @@ class DataReader(threading.Thread):
         Put an incoming line of data into a shared queue, ready for a DataWriter
         to process.
         """
-        info_string = (f"INFO: DataReader {self.name} ENQUEUEING DATA TO "
+        info_string = (f"[{dt.now().__str__()}] INFO: DataReader {self.name} ENQUEUEING DATA TO "
                        "SHARED QUEUE\n")
         sys.stderr.write(info_string)
-        sys.stderr.write(f"INFO: QUEUE IS NOW SIZE {self.queue.qsize()}\n")
+        sys.stderr.write(f"[{dt.now().__str__()}] INFO: QUEUE IS NOW SIZE {self.queue.qsize()}\n")
         self.queue.put(f"{self.port_name[5:]},{data.decode()}", block=True)
 
     def run(self):
@@ -110,7 +111,7 @@ class DataReader(threading.Thread):
             try:
                 self.enqueue_data(self.read_data_line())
             except UnicodeDecodeError as exception:
-                err_string = (f"INFO: DataReader {self.name} CAUGHT SOME "
+                err_string = (f"[{dt.now().__str__()}] INFO: DataReader {self.name} CAUGHT SOME "
                               "GARBAGE; IGNORING DATA LINE\n")
                 sys.stderr.write(err_string)
                 continue
