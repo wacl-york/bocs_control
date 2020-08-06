@@ -52,7 +52,7 @@ def main():
     """
     script_args = get_script_args()
 
-    profile_name = f'bocs-remote-uploads-{script_args.site_name[0]}'
+    profile_name = f'bocs-remote-upload-{script_args.site_name[0]}'
     upfile_name = compress_file(file_to_upload(script_args.data_directory[0]))
     object_key = os.path.join(script_args.site_name[0],
                               os.path.basename(upfile_name))
