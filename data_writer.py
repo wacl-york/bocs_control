@@ -59,13 +59,13 @@ class DataWriter(threading.Thread):
                     data_log.write(data_fields[1])
             elif re.match("SENSOR_ARRAY_[AB]", data_fields[0]):
                 date = dt.utcfromtimestamp(int(data_fields[1]))
-                date_string = (
-                    f"{date.year}-{str(date.month).zfill(2)}-"
-                    f"{str(date.day).zfill(2)}"
-                )
             else:
                 date = dt.now()
 
+            date_string = (
+                f"{date.year}-{str(date.month).zfill(2)}-"
+                f"{str(date.day).zfill(2)}"
+            )
             filename = f"{id_string}_{date_string}_data.log"
             with open(f"logs/{id_string}/{filename}", "a") as data_log:
                 data_log.write(",".join(data_fields[1:]))
