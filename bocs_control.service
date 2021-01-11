@@ -1,6 +1,5 @@
 [Unit]
 Description=BOCS Data Collector and Uploader
-WantedBy=multi-user.target
 
 [Service]
 WorkingDirectory=/home/pi/bocs_control
@@ -11,4 +10,4 @@ Type=simple
 Restart=always
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
