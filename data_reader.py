@@ -66,7 +66,7 @@ class DataReader(threading.Thread):
                 f"{self.port_name} FOR READ\n"
             )
             sys.stderr.write(info_string)
-            self.port = serial.Serial(self.port_name, 9600, timeout=1)
+            self.port = serial.Serial(self.port_name, 115200, timeout=1)
             self.port.reset_input_buffer()
         except serialutil.SerialException:
             # TODO: HANDLE PORT NOT OPENABLE EXCEPTION
@@ -93,7 +93,7 @@ class DataReader(threading.Thread):
         or not any data that can be read seems sensible.
         """
         try:
-            port = serial.Serial(self.port_name, 9600, timeout=1)
+            port = serial.Serial(self.port_name, 115200, timeout=1)
             port.close()
         except serialutil.SerialException as exception:
             raise serialutil.SerialException from exception
