@@ -14,3 +14,5 @@ cd "${WORKDIR}" || exit 1
 for ID in A B; do
   ${PYTHON} "${WORKDIR}/upload.py" "${SITE}" "${LOGDIR}/SENSOR_ARRAY_${ID}" >> "${LOGFILE}" 2>&1
 done;
+
+${PYTHON} "${WORKDIR}/upload.py" "${SITE}" "${LOGDIR}/PURPLEAIR" >> "${LOGFILE}" 2>&1
