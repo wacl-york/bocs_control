@@ -1,9 +1,0 @@
-name: bocs_control
-channels:
-      - defaults
-      - conda-forge
-dependencies:
-      - python=3.7
-      - cython
-      - pyserial
-      - pyqtgraph

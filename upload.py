@@ -85,7 +85,7 @@ def main():
 
     sss.Bucket("bocs-remote-uploads").upload_file(upfile_name, object_key)
 
-    exit(0)
+    sys.exit(0)
 
 
 # ===============================================================================
