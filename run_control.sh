@@ -2,7 +2,8 @@
 ################################################################################
 # run_control
 #===============================================================================
-#
+# Define log file name for the data reading/writing program and start it from
+# the right location.
 ################################################################################
 WORKDIR="$(readlink -f "$(dirname "${0}")")"
 LOGDIR="${WORKDIR}/logs"
