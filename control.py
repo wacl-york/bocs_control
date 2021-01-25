@@ -17,7 +17,7 @@ def main():
     Main entry point for the program.
     """
     global_queue = queue.Queue()
-    instrument_names = ["SENSOR_ARRAY_A", "SENSOR_ARRAY_B", "PURPLEAIR"]
+    instrument_names = ["SENSOR_ARRAY_A", "SENSOR_ARRAY_B"]
     reader_threads = [None] * len(instrument_names)
 
     for index, instrument_name in enumerate(instrument_names):
