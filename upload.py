@@ -5,6 +5,8 @@ AWS S3 Bucket Upload
 This requires AWS credentials to be set up in the user home directory.
 #############################################################################"""
 import argparse
+import datetime
+import glob
 import gzip
 import os
 import sys
@@ -52,17 +54,27 @@ def compress_file(filename):
 
 def file_to_upload(directory):
     """
-    Get the file in directory whose name is second in descending filename
-    numerical order.
+    Get the file to be uploaded to AWS, looking for yesterday's date in the
+    filename and a .log extension.
     """
     absolute_directory = os.path.abspath(directory)
-    directory_contents = [
-        os.path.join(absolute_directory, filename)
-        for filename in os.listdir(absolute_directory)
-    ]
-    directory_contents.sort(reverse=True)
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
+    date_string = (
+        f"{yesterday.year}-{str(yesterday.month).zfill(2)}-"
+        f"{str(yesterday.day).zfill(2)}"
+    )
+    glob_pattern = os.path.join(absolute_directory, f"*{date_string}*.log")
+    candidate = glob.glob(glob_pattern)
 
-    return directory_contents[1]
+    if not candidate:
+        error_string = "ERROR: UNABLE TO FIND YESTERDAY'S DATA FILE!\n"
+        raise RuntimeError(error_string)
+
+    if len(candidate) > 1:
+        error_string = "ERROR: MULTIPLE DATA FILES FOUND FOR YESTERDAY!\n"
+        raise RuntimeError(error_string)
+
+    return candidate[0]
 
 
 # ===============================================================================
@@ -73,17 +85,30 @@ def main():
     script_args = get_script_args()
 
     profile_name = f"bocs-remote-upload-{script_args.site_name[0]}"
-    upfile_name = compress_file(file_to_upload(script_args.data_directory[0]))
+    try:
+        data_file = file_to_upload(script_args.data_directory[0])
+    except RuntimeError as exception:
+        sys.stderr.write(str(exception))
+        sys.exit(1)
+
+    compressed_data_file = compress_file(data_file)
+
     object_key = os.path.join(
-        script_args.site_name[0], os.path.basename(upfile_name)
+        script_args.site_name[0], os.path.basename(compressed_data_file)
     )
-    info_string = f"INFO: UPLOADING {upfile_name} TO {object_key} IN BUCKET\n"
+    info_string = (
+        f"INFO: UPLOADING {compressed_data_file} TO {object_key} IN BUCKET\n"
+    )
     sys.stderr.write(info_string)
 
     session = boto3.session.Session(profile_name=profile_name)
     sss = session.resource("s3")
 
-    sss.Bucket("bocs-remote-uploads").upload_file(upfile_name, object_key)
+    sss.Bucket("bocs-remote-uploads").upload_file(
+        compressed_data_file, object_key
+    )
+
+    # TODO: IF UPLOAD IS SUCCESSFUL, DELETE UNCOMPRESSED DATA FROM PI
 
     sys.exit(0)
 
