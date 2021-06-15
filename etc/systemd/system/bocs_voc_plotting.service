@@ -6,7 +6,7 @@ After=bocs_control.service
 WorkingDirectory=/home/pi/bocs_control/plot
 User=pi
 Group=pi
-ExecStart=/usr/bin/env gnuplot /home/pi/bocs_control/plot/voc.plt
+ExecStart=/usr/bin/env gnuplot -p /home/pi/bocs_control/plot/voc.plt
 Type=simple
 Restart=always
 
