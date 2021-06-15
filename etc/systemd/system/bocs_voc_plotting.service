@@ -9,6 +9,8 @@ Group=pi
 ExecStart=/usr/bin/env gnuplot -p /home/pi/bocs_control/plot/voc.plt
 Type=simple
 Restart=always
+Environment="DISPLAY=:0"
+Environment="XAUTHORITY=/home/pi/.Xauthority"
 
 [Install]
 WantedBy=multi-user.target
