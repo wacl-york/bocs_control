@@ -33,7 +33,7 @@ data_file(filename) = sprintf("< tail -n 100 %s", filename)
 # PLOTTING LOOP
 #-------------------------------------------------------------------------------
 while(1) {
-    date = system("date +'%Y-%m-%d'")
+    date = system("date -u +'%Y-%m-%d'")
     filename = sprintf("../logs/SENSOR_ARRAY_A/SENSOR_ARRAY_A_%s_data.log", date)
 
     plot data_file(filename) using 1:(0.1875 * $8) with lines title "Total VOC 1",  \
