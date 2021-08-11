@@ -16,14 +16,19 @@ def main():
     """
     Main entry point for the program.
     """
+    # TODO add typing hints
     global_queue = queue.Queue()
     instrument_names = ["SENSOR_ARRAY_A", "SENSOR_ARRAY_B"]
     reader_threads = [None] * len(instrument_names)
 
+    # could replace this with list comp to be more Pythonic
     for index, instrument_name in enumerate(instrument_names):
         reader_threads[index] = dr.DataReader(
             f"{instrument_name}", f"/dev/{instrument_name}", global_queue
         )
+
+    # Is any error handling required in this script? what if reader can't create serial
+    # connection, or writer can't write to file?
 
     writer_thread = dw.DataWriter("DATA_WRITER", global_queue, instrument_names)
 

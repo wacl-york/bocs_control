@@ -32,9 +32,15 @@ class DataWriter(threading.Thread):
         """
         # TODO: MODIFY CALL TO queue.get TO INCORPORATE A SUITABLE TIMEOUT,
         # BASED ON ATTACHED INSTRUMENT RESPONSE TIMES
+        # Is that necessary? Doesn't matter if writing thread is blocked does
+        # it? a timeout wouldn't change anything - thread would leave this loop
+        # iteration and continue to next to try again
         sys.stderr.write(
             f"[{dt.now().__str__()}] INFO: DataWriter {self.name} DEQUEUEING DATA\n"
         )
+        # it sounds like this message should come after the data has been popped
+        # from the queue. both this and the above logging message could be debug
+        # level and removed from production to cut down on logging size
         sys.stderr.write(
             f"[{dt.now().__str__()}] INFO: QUEUE SIZE IS NOW {self.queue.qsize()}\n"
         )
@@ -45,6 +51,7 @@ class DataWriter(threading.Thread):
         Write data to the appropriate log file, named by instrument name and
         date.
         """
+        # This could be debug log
         info_string = (
             f"[{dt.now().__str__()}] INFO: DataWriter {self.name} WRITING DATA TO LOG FILE"
             "\n"
@@ -60,8 +67,16 @@ class DataWriter(threading.Thread):
             elif re.match("SENSOR_ARRAY_[AB]", data_fields[0]):
                 date = dt.utcfromtimestamp(int(data_fields[1]))
             else:
+                # Should this ever be reached?
                 date = dt.now()
 
+            # Is there a logic flow problem here? if ERROR is in
+            # data_fields, then 'date' doesn't get assigned, so the fstring
+            # below will fail. Wouldn't want to attempt to write data anyway if
+            # received error.
+            # Should this flow be if (error): log error & return, else log data?
+
+            # This would be more interpretable as date.strftime("%Y-%m-%d")
             date_string = (
                 f"{date.year}-{str(date.month).zfill(2)}-"
                 f"{str(date.day).zfill(2)}"
@@ -69,6 +84,9 @@ class DataWriter(threading.Thread):
             filename = f"{id_string}_{date_string}_data.log"
             with open(f"logs/{id_string}/{filename}", "a") as data_log:
                 data_log.write(",".join(data_fields[1:]))
+        # This is a big try/catch. hard to see where these exceptions were
+        # thrown. Can it be refactored to have exceptions handled closer to
+        # where they were called?
         except OSError:
             # TODO: HANDLE INABILITY TO OPEN DATA LOG
             err_string = (
@@ -107,6 +125,8 @@ def create_log_directories(instrument_names):
                 os.makedirs(log_directory)
             except OSError:
                 # TODO: HANDLE NOT BEING ABLE TO CREATE LOG FILE
+                # This seems a fatal exception. Should this be reraised and
+                # handled by control.py?
                 err_string = (
                     "[{dt.now().__str__()}] ERROR: UNABLE TO CREATE LOG DIRECTORY FOR"
                     f" INSTRUMENT {instrument_name}\n"

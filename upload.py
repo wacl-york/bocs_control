@@ -40,6 +40,7 @@ def get_script_args():
 
 
 def compress_file(filename):
+    # TODO Change this to use zipfile module (standard library)
     """
     gzip the file that we are going to transfer to S3.
     """
@@ -59,6 +60,8 @@ def file_to_upload(directory):
     """
     absolute_directory = os.path.abspath(directory)
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
+    # As with comment in data_writer, this can probably be done more
+    # interpretably with strftime('%Y-%m-%d')
     date_string = (
         f"{yesterday.year}-{str(yesterday.month).zfill(2)}-"
         f"{str(yesterday.day).zfill(2)}"
@@ -84,16 +87,24 @@ def main():
     """
     script_args = get_script_args()
 
+    # Unsure why site_name is indexed here. Shouldn't this only ever be a single
+    # value?
+    # So each BOCS site has its own AWS profile? Since profile name is just a
+    # string used locally in ~/aws/.credentials, couldn't this be the same across all instruments?
     profile_name = f"bocs-remote-upload-{script_args.site_name[0]}"
     try:
+        # Ditto comment about indexing data_directory
         data_file = file_to_upload(script_args.data_directory[0])
     except RuntimeError as exception:
         sys.stderr.write(str(exception))
         sys.exit(1)
 
+    # TODO add header
+
     compressed_data_file = compress_file(data_file)
 
     object_key = os.path.join(
+        # Again shouldn't need to index site_name
         script_args.site_name[0], os.path.basename(compressed_data_file)
     )
     info_string = (
@@ -104,11 +115,15 @@ def main():
     session = boto3.session.Session(profile_name=profile_name)
     sss = session.resource("s3")
 
+    # Add error handling
     sss.Bucket("bocs-remote-uploads").upload_file(
         compressed_data_file, object_key
     )
 
     # TODO: IF UPLOAD IS SUCCESSFUL, DELETE UNCOMPRESSED DATA FROM PI
+    # Can check for file being uploaded using head_object(), or simply if error
+    # isn't raised above
+    # Although does it matter too much if have zipped version anyway?
 
     sys.exit(0)
 

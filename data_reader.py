@@ -8,6 +8,7 @@ import sys
 import threading
 
 import serial
+# This import isn't necessary, can just use serial.serialutil
 from serial import serialutil
 from serial.tools.list_ports import comports
 
@@ -21,6 +22,8 @@ class DataReader(threading.Thread):
 
     def __init__(self, name, port_name, shared_queue):
         threading.Thread.__init__(self)
+        # Looks like logging has levels, i.e. 'INFO', 'ERROR'.
+        # I was under the impression it didn't
         err_string = (
             f"[{dt.now().__str__()}] INFO: DataReader {name} INITIALISING WITH PORT NAME"
             f" {port_name}\n"
@@ -39,6 +42,9 @@ class DataReader(threading.Thread):
             self.check_port_available()
         except serialutil.SerialException:
             # TODO: HANDLE PORT UNAVAILABLE
+            # What needs to be done with this exception? Terminate thread?
+            # Reraise to let control.py handle it?
+            # Seems like a fatal error, unless want to keep retrying
             err_string = (
                 f"[{dt.now().__str__()}] ERROR: DataReader {self.name} THINKS PORT "
                 f"{self.port_name} IS UNAVAILABLE\n"
@@ -51,9 +57,13 @@ class DataReader(threading.Thread):
                 f"{self.port_name} FUNCTIONALITY\n"
             )
             sys.stderr.write(info_string)
+            # I don't see what use this check is doing. It asserts that the
+            # port can be opened, but any errors when opening the port are also
+            # caught below in the next try/catch block
             self.check_port_function()
         except serialutil.SerialException:
             # TODO: HANDLE INCORRECT PORT FUNCTION
+            # Ditto about how to handle this
             err_string = (
                 f"[{dt.now().__str__()}] ERROR: DataReader {self.name} THINKS PORT "
                 f"{self.port_name} IS MALFUNCTIONING\n"
@@ -70,6 +80,7 @@ class DataReader(threading.Thread):
             self.port.reset_input_buffer()
         except serialutil.SerialException:
             # TODO: HANDLE PORT NOT OPENABLE EXCEPTION
+            # ditto
             err_string = (
                 f"[{dt.now().__str__()}] ERROR: DataReader {self.name} CAN'T OPEN "
                 f"{self.port_name} FOR READ\n"
@@ -102,11 +113,17 @@ class DataReader(threading.Thread):
         """
         Read and return a line of attached instrument data.
         """
+        # Should this be debugging level? then can set minimum level as INFO in
+        # production so don't spam log files
         info_string = (
             f"[{dt.now().__str__()}] INFO: DataReader {self.name} READING DATA FROM "
             f"{self.port_name}\n"
         )
         sys.stderr.write(info_string)
+        # No exceptions to catch here?
+        # Looks like this will timeout after 1s (specified when Serial objected
+        # created). What happens at that point? Will it just return whatever is
+        # in the buffer, even if no newline character has been reached?
         data = self.port.readline()
         return data
 
@@ -115,14 +132,21 @@ class DataReader(threading.Thread):
         Put an incoming line of data into a shared queue, ready for a DataWriter
         to process.
         """
+        # again, this is more debugging logging and imo doesn't need to be in
+        # production
         info_string = (
             f"[{dt.now().__str__()}] INFO: DataReader {self.name} ENQUEUEING DATA TO "
             "SHARED QUEUE\n"
         )
         sys.stderr.write(info_string)
+        # This should come after the line has been added and again imo can be
+        # removed in production
         sys.stderr.write(
             f"[{dt.now().__str__()}] INFO: QUEUE IS NOW SIZE {self.queue.qsize()}\n"
         )
+        # What is this magic number 5 relating to? Looks to me
+        # like it's stripping /dev/ away to leave SENSOR_ARRAY_X,
+        # but this can just be obtained as self.name
         self.queue.put(f"{self.port_name[5:]},{data.decode()}", block=True)
 
     def run(self):
@@ -132,6 +156,11 @@ class DataReader(threading.Thread):
         while True:
             try:
                 self.enqueue_data(self.read_data_line())
+            # Is this the only exception from read_data_line?
+            # What about if line doesn't have X number of commas? Seen this
+            # issue several times in the raw data.
+            # See also earlier comment about timeout, does that raise an
+            # exception or just return whatever is in the buffer?
             except UnicodeDecodeError:
                 err_string = (
                     f"[{dt.now().__str__()}] INFO: DataReader {self.name} CAUGHT SOME "
