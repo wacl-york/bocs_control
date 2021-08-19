@@ -10,6 +10,12 @@ __pycache__
 # log files (testing)
 logs
 
+# pre-commit config
+.pre-commit-config.yaml
+
+# coverage testing
+.coverage
+
 # swap
 [._]*.s[a-v][a-z]
 [._]*.sw[a-p]

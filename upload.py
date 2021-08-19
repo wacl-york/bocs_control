@@ -39,6 +39,27 @@ def get_script_args():
     return arg_parser.parse_args()
 
 
+def prepend_header(data_fn: str, header_fn: str):
+    """
+    Adds the header to the data file.
+
+    Args:
+        - data_fn (str): Filename containing the data log.
+        - header_fn (str): Filename containing the header.
+
+    Returns:
+        None, saves the prepended file back to disk under the original filename
+        (data_fn).
+    """
+    with open(data_fn, "r+") as data_file:
+        contents: list = data_file.readlines()
+        with open(header_fn, "r") as header_file:
+            header: str = header_file.read()
+        data_file.seek(0, 0)
+        data_file.write(header)
+        data_file.writelines(contents)
+
+
 def compress_file(filename):
     # TODO Change this to use zipfile module (standard library)
     """
@@ -99,13 +120,14 @@ def main():
         sys.stderr.write(str(exception))
         sys.exit(1)
 
-    # TODO add header
+    prepend_header(data_file, "header.txt")
 
     compressed_data_file = compress_file(data_file)
 
     object_key = os.path.join(
         # Again shouldn't need to index site_name
-        script_args.site_name[0], os.path.basename(compressed_data_file)
+        script_args.site_name[0],
+        os.path.basename(compressed_data_file),
     )
     info_string = (
         f"INFO: UPLOADING {compressed_data_file} TO {object_key} IN BUCKET\n"

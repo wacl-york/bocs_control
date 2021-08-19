@@ -8,6 +8,7 @@ import sys
 import threading
 
 import serial
+
 # This import isn't necessary, can just use serial.serialutil
 from serial import serialutil
 from serial.tools.list_ports import comports
