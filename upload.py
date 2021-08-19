@@ -120,7 +120,7 @@ def main():
         sys.stderr.write(str(exception))
         sys.exit(1)
 
-    prepend_header(data_file, "header.txt")
+    prepend_header(data_file, "misc/header.txt")
 
     compressed_data_file = compress_file(data_file)
 
