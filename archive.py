@@ -39,12 +39,15 @@ def prepend_header(data_fn: str, header_fn: str):
         None, saves the prepended file back to disk under the original filename
         (data_fn).
     """
-    with open(data_fn, "r+") as data_file:
+    with open(data_fn, "r") as data_file:
         contents: list = data_file.readlines()
-        with open(header_fn, "r") as header_file:
-            header: str = header_file.read()
-        data_file.seek(0, 0)
-        data_file.write(header)
+
+    with open(header_fn, "r") as header_file:
+        header: list = header_file.readlines()
+
+    contents = header + contents
+
+    with open(data_fn, "w") as data_file:
         data_file.writelines(contents)
 
 
