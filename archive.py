@@ -69,12 +69,7 @@ def file_to_archive(directory):
     """
     absolute_directory = os.path.abspath(directory)
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
-    # As with comment in data_writer, this can probably be done more
-    # interpretably with strftime('%Y-%m-%d')
-    date_string = (
-        f"{yesterday.year}-{str(yesterday.month).zfill(2)}-"
-        f"{str(yesterday.day).zfill(2)}"
-    )
+    date_string = yesterday.strftime("%Y-%m-%d")
     glob_pattern = os.path.join(absolute_directory, f"*{date_string}*.log")
     candidate = glob.glob(glob_pattern)
 
