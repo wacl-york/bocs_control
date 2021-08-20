@@ -1,11 +1,11 @@
 """#############################################################################
-Unit tests for upload.py
+Unit tests for archive.py
 ================================================================================
 #############################################################################"""
 import os
 import unittest
 from unittest.mock import patch, Mock
-import upload
+import archive
 
 
 class TestAddHeader(unittest.TestCase):
@@ -27,7 +27,7 @@ class TestAddHeader(unittest.TestCase):
         os.remove(self.header_fn)
 
     def test_success(self):
-        upload.prepend_header(self.data_fn, self.header_fn)
+        archive.prepend_header(self.data_fn, self.header_fn)
 
         with open(self.data_fn, "r") as infile:
             new_content = infile.readlines()
