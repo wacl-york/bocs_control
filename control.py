@@ -7,6 +7,7 @@ AQ INSTRUMENT CONTROL
   and writes it to log files
 ============================================================================="""
 import queue
+import bocs_logger
 
 import data_reader as dr
 import data_writer as dw
