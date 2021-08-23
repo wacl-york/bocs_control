@@ -8,9 +8,6 @@ import sys
 import threading
 
 import serial
-
-# This import isn't necessary, can just use serial.serialutil
-from serial import serialutil
 from serial.tools.list_ports import comports
 
 # ===============================================================================
@@ -41,7 +38,7 @@ class DataReader(threading.Thread):
             )
             sys.stderr.write(info_string)
             self.check_port_available()
-        except serialutil.SerialException:
+        except serial.serialutil.SerialException:
             # TODO: HANDLE PORT UNAVAILABLE
             # What needs to be done with this exception? Terminate thread?
             # Reraise to let control.py handle it?
@@ -62,7 +59,7 @@ class DataReader(threading.Thread):
             # port can be opened, but any errors when opening the port are also
             # caught below in the next try/catch block
             self.check_port_function()
-        except serialutil.SerialException:
+        except serial.serialutil.SerialException:
             # TODO: HANDLE INCORRECT PORT FUNCTION
             # Ditto about how to handle this
             err_string = (
@@ -79,7 +76,7 @@ class DataReader(threading.Thread):
             sys.stderr.write(info_string)
             self.port = serial.Serial(self.port_name, 9600, timeout=1)
             self.port.reset_input_buffer()
-        except serialutil.SerialException:
+        except serial.serialutil.SerialException:
             # TODO: HANDLE PORT NOT OPENABLE EXCEPTION
             # ditto
             err_string = (
@@ -97,7 +94,7 @@ class DataReader(threading.Thread):
             port_list = [port.device for port in comports(include_links=True)]
             assert self.port_name in port_list
         except AssertionError as exception:
-            raise serialutil.SerialException from exception
+            raise serial.serialutil.SerialException from exception
 
     def check_port_function(self):
         """
@@ -107,8 +104,8 @@ class DataReader(threading.Thread):
         try:
             port = serial.Serial(self.port_name, 9600, timeout=1)
             port.close()
-        except serialutil.SerialException as exception:
-            raise serialutil.SerialException from exception
+        except serial.serialutil.SerialException as exception:
+            raise serial.serialutil.SerialException from exception
 
     def read_data_line(self):
         """
