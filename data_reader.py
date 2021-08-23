@@ -4,6 +4,7 @@ DataReader CLASS
 
 ============================================================================="""
 from datetime import datetime as dt
+import logging
 import sys
 import threading
 
@@ -20,41 +21,29 @@ class DataReader(threading.Thread):
 
     def __init__(self, name, port_name, shared_queue):
         threading.Thread.__init__(self)
-        # Looks like logging has levels, i.e. 'INFO', 'ERROR'.
-        # I was under the impression it didn't
-        err_string = (
-            f"[{dt.now().__str__()}] INFO: DataReader {name} INITIALISING WITH PORT NAME"
-            f" {port_name}\n"
-        )
-        sys.stderr.write(err_string)
+        logging.info(f"{name} INITIALISING WITH PORT NAME {port_name}")
         self.name = name
         self.port_name = port_name
         self.queue = shared_queue
 
         try:
-            info_string = (
-                f"[{dt.now().__str__()}] INFO: DataReader {self.name} CHECKING PORT "
-                f"{self.port_name} AVAILABILITY\n"
+            logging.info(
+                f"{self.name} CHECKING PORT {self.port_name} AVAILABILITY"
             )
-            sys.stderr.write(info_string)
             self.check_port_available()
         except serial.serialutil.SerialException:
             # TODO: HANDLE PORT UNAVAILABLE
             # What needs to be done with this exception? Terminate thread?
             # Reraise to let control.py handle it?
             # Seems like a fatal error, unless want to keep retrying
-            err_string = (
-                f"[{dt.now().__str__()}] ERROR: DataReader {self.name} THINKS PORT "
-                f"{self.port_name} IS UNAVAILABLE\n"
+            logging.error(
+                f"{self.name} THINKS PORT {self.port_name} IS UNAVAILABLE"
             )
-            sys.stderr.write(err_string)
 
         try:
-            info_string = (
-                f"[{dt.now().__str__()}] INFO: DataReader {self.name} CHECKING PORT "
-                f"{self.port_name} FUNCTIONALITY\n"
+            logging.info(
+                f"{self.name} CHECKING PORT {self.port_name} FUNCTIONALITY"
             )
-            sys.stderr.write(info_string)
             # I don't see what use this check is doing. It asserts that the
             # port can be opened, but any errors when opening the port are also
             # caught below in the next try/catch block
@@ -62,28 +51,18 @@ class DataReader(threading.Thread):
         except serial.serialutil.SerialException:
             # TODO: HANDLE INCORRECT PORT FUNCTION
             # Ditto about how to handle this
-            err_string = (
-                f"[{dt.now().__str__()}] ERROR: DataReader {self.name} THINKS PORT "
-                f"{self.port_name} IS MALFUNCTIONING\n"
+            logging.error(
+                f"{self.name} THINKS PORT {self.port_name} IS MALFUNCTIONING"
             )
-            sys.stderr.write(err_string)
 
         try:
-            info_string = (
-                f"[{dt.now().__str__()}] INFO: DataReader {self.name} OPENING PORT "
-                f"{self.port_name} FOR READ\n"
-            )
-            sys.stderr.write(info_string)
+            logging.info(f"{self.name} OPENING PORT {self.port_name} FOR READ")
             self.port = serial.Serial(self.port_name, 9600, timeout=1)
             self.port.reset_input_buffer()
         except serial.serialutil.SerialException:
             # TODO: HANDLE PORT NOT OPENABLE EXCEPTION
             # ditto
-            err_string = (
-                f"[{dt.now().__str__()}] ERROR: DataReader {self.name} CAN'T OPEN "
-                f"{self.port_name} FOR READ\n"
-            )
-            sys.stderr.write(err_string)
+            logging.error(f"{self.name} CAN'T OPEN {self.port_name} FOR READ")
 
     def check_port_available(self):
         """
@@ -111,13 +90,7 @@ class DataReader(threading.Thread):
         """
         Read and return a line of attached instrument data.
         """
-        # Should this be debugging level? then can set minimum level as INFO in
-        # production so don't spam log files
-        info_string = (
-            f"[{dt.now().__str__()}] INFO: DataReader {self.name} READING DATA FROM "
-            f"{self.port_name}\n"
-        )
-        sys.stderr.write(info_string)
+        logging.debug(f"{self.name} READING DATA FROM {self.port_name}")
         # No exceptions to catch here?
         # Looks like this will timeout after 1s (specified when Serial objected
         # created). What happens at that point? Will it just return whatever is
@@ -130,22 +103,13 @@ class DataReader(threading.Thread):
         Put an incoming line of data into a shared queue, ready for a DataWriter
         to process.
         """
-        # again, this is more debugging logging and imo doesn't need to be in
-        # production
-        info_string = (
-            f"[{dt.now().__str__()}] INFO: DataReader {self.name} ENQUEUEING DATA TO "
-            "SHARED QUEUE\n"
-        )
-        sys.stderr.write(info_string)
-        # This should come after the line has been added and again imo can be
-        # removed in production
-        sys.stderr.write(
-            f"[{dt.now().__str__()}] INFO: QUEUE IS NOW SIZE {self.queue.qsize()}\n"
-        )
+        logging.debug(f"{self.name} ENQUEUEING DATA TO SHARED QUEUE")
         # What is this magic number 5 relating to? Looks to me
         # like it's stripping /dev/ away to leave SENSOR_ARRAY_X,
         # but this can just be obtained as self.name
         self.queue.put(f"{self.port_name[5:]},{data.decode()}", block=True)
+
+        logging.debug(f"QUEUE IS NOW SIZE {self.queue.qsize()}")
 
     def run(self):
         """
@@ -160,9 +124,7 @@ class DataReader(threading.Thread):
             # See also earlier comment about timeout, does that raise an
             # exception or just return whatever is in the buffer?
             except UnicodeDecodeError:
-                err_string = (
-                    f"[{dt.now().__str__()}] INFO: DataReader {self.name} CAUGHT SOME "
-                    "GARBAGE; IGNORING DATA LINE\n"
+                logging.error(
+                    f"{self.name} CAUGHT SOME GARBAGE; IGNORING DATA LINE"
                 )
-                sys.stderr.write(err_string)
                 continue
