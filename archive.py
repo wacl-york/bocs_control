@@ -18,7 +18,7 @@ def get_script_args():
     """
     Get command line arguments and options.
     """
-    description = "Upload BOCS data to AWS S3 bucket"
+    description = "Archives previous day's data file"
     arg_parser = argparse.ArgumentParser(description=description)
     help_string = "Path of directory in which to find data"
     arg_parser.add_argument(
