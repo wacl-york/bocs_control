@@ -1,5 +1,5 @@
 [Unit]
-Description=BOCS Data Collector and Uploader
+Description=BOCS Data Collector
 
 [Service]
 WorkingDirectory=/home/pi/bocs_control
