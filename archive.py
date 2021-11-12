@@ -63,7 +63,11 @@ def compress_file(filename: str) -> str:
     """
     outfile_name = f"{filename}.zip"
     with zipfile.ZipFile(outfile_name, "w") as outzip:
-        outzip.write(filename, compress_type=zipfile.ZIP_DEFLATED)
+        outzip.write(
+            filename,
+            compress_type=zipfile.ZIP_DEFLATED,
+            arcname=os.path.basename(filename),
+        )
 
     return outfile_name
 
