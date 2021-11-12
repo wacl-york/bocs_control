@@ -21,14 +21,16 @@ class DataReader(threading.Thread):
 
     def __init__(self, name, port_name, shared_queue):
         threading.Thread.__init__(self)
-        logging.info(f"{name} INITIALISING WITH PORT NAME {port_name}")
+        logging.info(
+            f"{name} initialising serial reader on port name {port_name}"
+        )
         self.name = name
         self.port_name = port_name
         self.queue = shared_queue
 
         try:
             logging.info(
-                f"{self.name} CHECKING PORT {self.port_name} AVAILABILITY"
+                f"{self.name} checking port {self.port_name} availability"
             )
             self.check_port_available()
         except serial.serialutil.SerialException:
@@ -37,12 +39,12 @@ class DataReader(threading.Thread):
             # Reraise to let control.py handle it?
             # Seems like a fatal error, unless want to keep retrying
             logging.error(
-                f"{self.name} THINKS PORT {self.port_name} IS UNAVAILABLE"
+                f"{self.name} thinks port {self.port_name} is unavailable"
             )
 
         try:
             logging.info(
-                f"{self.name} CHECKING PORT {self.port_name} FUNCTIONALITY"
+                f"{self.name} checking port {self.port_name} functionality"
             )
             # I don't see what use this check is doing. It asserts that the
             # port can be opened, but any errors when opening the port are also
@@ -52,17 +54,17 @@ class DataReader(threading.Thread):
             # TODO: HANDLE INCORRECT PORT FUNCTION
             # Ditto about how to handle this
             logging.error(
-                f"{self.name} THINKS PORT {self.port_name} IS MALFUNCTIONING"
+                f"{self.name} thinks port {self.port_name} is malfunctioning"
             )
 
         try:
-            logging.info(f"{self.name} OPENING PORT {self.port_name} FOR READ")
+            logging.info(f"{self.name} opening port {self.port_name} for read")
             self.port = serial.Serial(self.port_name, 9600, timeout=1)
             self.port.reset_input_buffer()
         except serial.serialutil.SerialException:
             # TODO: HANDLE PORT NOT OPENABLE EXCEPTION
             # ditto
-            logging.error(f"{self.name} CAN'T OPEN {self.port_name} FOR READ")
+            logging.error(f"{self.name} can't open {self.port_name} for read")
 
     def check_port_available(self):
         """
@@ -90,7 +92,7 @@ class DataReader(threading.Thread):
         """
         Read and return a line of attached instrument data.
         """
-        logging.debug(f"{self.name} READING DATA FROM {self.port_name}")
+        logging.debug(f"{self.name} reading data from {self.port_name}")
         # No exceptions to catch here?
         # Looks like this will timeout after 1s (specified when Serial objected
         # created). What happens at that point? Will it just return whatever is
@@ -103,13 +105,14 @@ class DataReader(threading.Thread):
         Put an incoming line of data into a shared queue, ready for a DataWriter
         to process.
         """
-        logging.debug(f"{self.name} ENQUEUEING DATA TO SHARED QUEUE")
+        logging.debug(f"{self.name} enqueueing data to shared queue")
+        # TODO
         # What is this magic number 5 relating to? Looks to me
         # like it's stripping /dev/ away to leave SENSOR_ARRAY_X,
         # but this can just be obtained as self.name
         self.queue.put(f"{self.port_name[5:]},{data.decode()}", block=True)
 
-        logging.debug(f"QUEUE IS NOW SIZE {self.queue.qsize()}")
+        logging.debug(f"Queue is now size {self.queue.qsize()}")
 
     def run(self):
         """
@@ -125,6 +128,6 @@ class DataReader(threading.Thread):
             # exception or just return whatever is in the buffer?
             except UnicodeDecodeError:
                 logging.error(
-                    f"{self.name} CAUGHT SOME GARBAGE; IGNORING DATA LINE"
+                    f"{self.name} caught some garbage; ignoring data line"
                 )
                 continue

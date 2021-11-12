@@ -18,10 +18,9 @@ class DataWriter(threading.Thread):
     of the serial input to be flushed.
     """
 
-    def __init__(self, name, shared_queue, instrument_names):
+    def __init__(self, shared_queue, instrument_names):
         threading.Thread.__init__(self)
-        logging.info(f"{name} INITIALISING")
-        self.name = name
+        logging.info("Initialising data logging thread")
         self.queue = shared_queue
         create_log_directories(instrument_names)
 
@@ -34,9 +33,9 @@ class DataWriter(threading.Thread):
         # Is that necessary? Doesn't matter if writing thread is blocked does
         # it? a timeout wouldn't change anything - thread would leave this loop
         # iteration and continue to next to try again
-        logging.debug(f"{self.name} DEQUEUEING DATA")
+        logging.debug("Dequeueing data")
         line = self.queue.get(block=True, timeout=None)
-        logging.debug(f"QUEUE SIZE IS NOW {self.queue.qsize()}")
+        logging.debug(f"Queue size is now {self.queue.qsize()}")
 
         return line
 
@@ -45,7 +44,7 @@ class DataWriter(threading.Thread):
         Write data to the appropriate log file, named by instrument name and
         date.
         """
-        logging.debug(f"{self.name} WRITING DATA TO LOG FILE")
+        logging.debug("Writing data to log file")
         try:
             data_fields = data.split(",")
             id_string = data_fields[0]
@@ -78,11 +77,9 @@ class DataWriter(threading.Thread):
         # where they were called?
         except OSError:
             # TODO: HANDLE INABILITY TO OPEN DATA LOG
-            logging.error(f"{self.name} UNABLE TO APPEND TO DATA LOG")
+            logging.error("Unable to append to data log")
         except ValueError:
-            logging.error(
-                f"{self.name} UNABLE TO DECODE DATE FROM INSTRUMENT TIMESTAMP"
-            )
+            logging.error("Unable to decode date from instrument timestamp")
 
     def run(self):
         """
@@ -100,7 +97,7 @@ def create_log_directories(instrument_names):
         log_directory = f"logs/{instrument_name}"
         if not os.path.isdir(log_directory):
             logging.info(
-                f"LOG DIRECTORY FOR INSTRUMENT {instrument_name} DOES NOT EXIST - CREATING"
+                f"Log directory for instrument {instrument_name} does not exist - creating"
             )
             try:
                 os.makedirs(log_directory)
@@ -109,5 +106,5 @@ def create_log_directories(instrument_names):
                 # This seems a fatal exception. Should this be reraised and
                 # handled by control.py?
                 logging.error(
-                    "UNABLE TO CREATE LOG DIRECTORY FOR INSTRUMENT {instrument_name}"
+                    "Unable to create log directory for instrument {instrument_name}"
                 )
