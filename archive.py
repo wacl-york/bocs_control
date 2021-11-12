@@ -6,8 +6,8 @@ Archives yesterday's log file.
 import argparse
 import datetime
 import glob
-import gzip
 import os
+import zipfile
 import sys
 
 # ===============================================================================
@@ -51,16 +51,19 @@ def prepend_header(data_fn: str, header_fn: str):
         data_file.writelines(contents)
 
 
-def compress_file(filename):
-    # TODO Change this to use zipfile module (standard library)
+def compress_file(filename: str) -> str:
     """
-    gzip the file that we are going to transfer to S3.
+    Zip the file that we are going to transfer to S3.
+
+    Args:
+        - filename (str): File to be zipped.
+
+    Returns:
+        The resultant archive filename.
     """
-    outfile_name = f"{filename}.gz"
-    with open(filename, "rb") as infile, gzip.open(
-        outfile_name, "wb"
-    ) as outfile:
-        outfile.writelines(infile)
+    outfile_name = f"{filename}.zip"
+    with zipfile.ZipFile(outfile_name, "w") as outzip:
+        outzip.write(filename, compress_type=zipfile.ZIP_DEFLATED)
 
     return outfile_name
 
