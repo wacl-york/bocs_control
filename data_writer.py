@@ -85,6 +85,7 @@ class DataWriter(threading.Thread):
         """
         Main entry point for DataWriter threads.
         """
+        logging.info("Starting data writing loop")
         while True:
             self.write_data(self.dequeue_data())
 
