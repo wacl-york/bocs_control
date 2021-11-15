@@ -4,13 +4,11 @@ DataReader CLASS
 
 ============================================================================="""
 from datetime import datetime as dt
+import logging
 import sys
 import threading
 
 import serial
-
-# This import isn't necessary, can just use serial.serialutil
-from serial import serialutil
 from serial.tools.list_ports import comports
 
 # ===============================================================================
@@ -23,70 +21,50 @@ class DataReader(threading.Thread):
 
     def __init__(self, name, port_name, shared_queue):
         threading.Thread.__init__(self)
-        # Looks like logging has levels, i.e. 'INFO', 'ERROR'.
-        # I was under the impression it didn't
-        err_string = (
-            f"[{dt.now().__str__()}] INFO: DataReader {name} INITIALISING WITH PORT NAME"
-            f" {port_name}\n"
+        logging.info(
+            f"{name} initialising serial reader on port name {port_name}"
         )
-        sys.stderr.write(err_string)
         self.name = name
         self.port_name = port_name
         self.queue = shared_queue
 
         try:
-            info_string = (
-                f"[{dt.now().__str__()}] INFO: DataReader {self.name} CHECKING PORT "
-                f"{self.port_name} AVAILABILITY\n"
+            logging.info(
+                f"{self.name} checking port {self.port_name} availability"
             )
-            sys.stderr.write(info_string)
             self.check_port_available()
-        except serialutil.SerialException:
+        except serial.serialutil.SerialException:
             # TODO: HANDLE PORT UNAVAILABLE
             # What needs to be done with this exception? Terminate thread?
             # Reraise to let control.py handle it?
             # Seems like a fatal error, unless want to keep retrying
-            err_string = (
-                f"[{dt.now().__str__()}] ERROR: DataReader {self.name} THINKS PORT "
-                f"{self.port_name} IS UNAVAILABLE\n"
+            logging.error(
+                f"{self.name} thinks port {self.port_name} is unavailable"
             )
-            sys.stderr.write(err_string)
 
         try:
-            info_string = (
-                f"[{dt.now().__str__()}] INFO: DataReader {self.name} CHECKING PORT "
-                f"{self.port_name} FUNCTIONALITY\n"
+            logging.info(
+                f"{self.name} checking port {self.port_name} functionality"
             )
-            sys.stderr.write(info_string)
             # I don't see what use this check is doing. It asserts that the
             # port can be opened, but any errors when opening the port are also
             # caught below in the next try/catch block
             self.check_port_function()
-        except serialutil.SerialException:
+        except serial.serialutil.SerialException:
             # TODO: HANDLE INCORRECT PORT FUNCTION
             # Ditto about how to handle this
-            err_string = (
-                f"[{dt.now().__str__()}] ERROR: DataReader {self.name} THINKS PORT "
-                f"{self.port_name} IS MALFUNCTIONING\n"
+            logging.error(
+                f"{self.name} thinks port {self.port_name} is malfunctioning"
             )
-            sys.stderr.write(err_string)
 
         try:
-            info_string = (
-                f"[{dt.now().__str__()}] INFO: DataReader {self.name} OPENING PORT "
-                f"{self.port_name} FOR READ\n"
-            )
-            sys.stderr.write(info_string)
+            logging.info(f"{self.name} opening port {self.port_name} for read")
             self.port = serial.Serial(self.port_name, 9600, timeout=1)
             self.port.reset_input_buffer()
-        except serialutil.SerialException:
+        except serial.serialutil.SerialException:
             # TODO: HANDLE PORT NOT OPENABLE EXCEPTION
             # ditto
-            err_string = (
-                f"[{dt.now().__str__()}] ERROR: DataReader {self.name} CAN'T OPEN "
-                f"{self.port_name} FOR READ\n"
-            )
-            sys.stderr.write(err_string)
+            logging.error(f"{self.name} can't open {self.port_name} for read")
 
     def check_port_available(self):
         """
@@ -97,7 +75,7 @@ class DataReader(threading.Thread):
             port_list = [port.device for port in comports(include_links=True)]
             assert self.port_name in port_list
         except AssertionError as exception:
-            raise serialutil.SerialException from exception
+            raise serial.serialutil.SerialException from exception
 
     def check_port_function(self):
         """
@@ -107,20 +85,14 @@ class DataReader(threading.Thread):
         try:
             port = serial.Serial(self.port_name, 9600, timeout=1)
             port.close()
-        except serialutil.SerialException as exception:
-            raise serialutil.SerialException from exception
+        except serial.serialutil.SerialException as exception:
+            raise serial.serialutil.SerialException from exception
 
     def read_data_line(self):
         """
         Read and return a line of attached instrument data.
         """
-        # Should this be debugging level? then can set minimum level as INFO in
-        # production so don't spam log files
-        info_string = (
-            f"[{dt.now().__str__()}] INFO: DataReader {self.name} READING DATA FROM "
-            f"{self.port_name}\n"
-        )
-        sys.stderr.write(info_string)
+        logging.debug(f"{self.name} reading data from {self.port_name}")
         # No exceptions to catch here?
         # Looks like this will timeout after 1s (specified when Serial objected
         # created). What happens at that point? Will it just return whatever is
@@ -133,22 +105,14 @@ class DataReader(threading.Thread):
         Put an incoming line of data into a shared queue, ready for a DataWriter
         to process.
         """
-        # again, this is more debugging logging and imo doesn't need to be in
-        # production
-        info_string = (
-            f"[{dt.now().__str__()}] INFO: DataReader {self.name} ENQUEUEING DATA TO "
-            "SHARED QUEUE\n"
-        )
-        sys.stderr.write(info_string)
-        # This should come after the line has been added and again imo can be
-        # removed in production
-        sys.stderr.write(
-            f"[{dt.now().__str__()}] INFO: QUEUE IS NOW SIZE {self.queue.qsize()}\n"
-        )
+        logging.debug(f"{self.name} enqueueing data to shared queue")
+        # TODO
         # What is this magic number 5 relating to? Looks to me
         # like it's stripping /dev/ away to leave SENSOR_ARRAY_X,
         # but this can just be obtained as self.name
         self.queue.put(f"{self.port_name[5:]},{data.decode()}", block=True)
+
+        logging.debug(f"Queue is now size {self.queue.qsize()}")
 
     def run(self):
         """
@@ -163,9 +127,7 @@ class DataReader(threading.Thread):
             # See also earlier comment about timeout, does that raise an
             # exception or just return whatever is in the buffer?
             except UnicodeDecodeError:
-                err_string = (
-                    f"[{dt.now().__str__()}] INFO: DataReader {self.name} CAUGHT SOME "
-                    "GARBAGE; IGNORING DATA LINE\n"
+                logging.error(
+                    f"{self.name} caught some garbage; ignoring data line"
                 )
-                sys.stderr.write(err_string)
                 continue

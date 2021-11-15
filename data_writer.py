@@ -4,6 +4,7 @@ DataWriter CLASS
 
 ============================================================================="""
 from datetime import datetime as dt
+import logging
 import os
 import re
 import sys
@@ -17,12 +18,9 @@ class DataWriter(threading.Thread):
     of the serial input to be flushed.
     """
 
-    def __init__(self, name, shared_queue, instrument_names):
+    def __init__(self, shared_queue, instrument_names):
         threading.Thread.__init__(self)
-        sys.stderr.write(
-            f"[{dt.now().__str__()}] INFO: DataWriter {name} INITIALISING\n"
-        )
-        self.name = name
+        logging.info("Initialising data logging thread")
         self.queue = shared_queue
         create_log_directories(instrument_names)
 
@@ -35,28 +33,18 @@ class DataWriter(threading.Thread):
         # Is that necessary? Doesn't matter if writing thread is blocked does
         # it? a timeout wouldn't change anything - thread would leave this loop
         # iteration and continue to next to try again
-        sys.stderr.write(
-            f"[{dt.now().__str__()}] INFO: DataWriter {self.name} DEQUEUEING DATA\n"
-        )
-        # it sounds like this message should come after the data has been popped
-        # from the queue. both this and the above logging message could be debug
-        # level and removed from production to cut down on logging size
-        sys.stderr.write(
-            f"[{dt.now().__str__()}] INFO: QUEUE SIZE IS NOW {self.queue.qsize()}\n"
-        )
-        return self.queue.get(block=True, timeout=None)
+        logging.debug("Dequeueing data")
+        line = self.queue.get(block=True, timeout=None)
+        logging.debug(f"Queue size is now {self.queue.qsize()}")
+
+        return line
 
     def write_data(self, data):
         """
         Write data to the appropriate log file, named by instrument name and
         date.
         """
-        # This could be debug log
-        info_string = (
-            f"[{dt.now().__str__()}] INFO: DataWriter {self.name} WRITING DATA TO LOG FILE"
-            "\n"
-        )
-        sys.stderr.write(info_string)
+        logging.debug("Writing data to log file")
         try:
             data_fields = data.split(",")
             id_string = data_fields[0]
@@ -89,22 +77,15 @@ class DataWriter(threading.Thread):
         # where they were called?
         except OSError:
             # TODO: HANDLE INABILITY TO OPEN DATA LOG
-            err_string = (
-                f"[{dt.now().__str__()}] ERROR: DataWriter {self.name} UNABLE TO APPEND TO "
-                "DATA LOG\n"
-            )
-            sys.stderr.write(err_string)
+            logging.error("Unable to append to data log")
         except ValueError:
-            err_string = (
-                f"[{dt.now().__str__()}] ERROR: UNABLE TO DECODE DATE FROM INSTRUMENT "
-                "TIMESTAMP\n"
-            )
-            sys.stderr.write(err_string)
+            logging.debug(f"Unable to decode date from instrument timestamp: {data_fields[1]}")
 
     def run(self):
         """
         Main entry point for DataWriter threads.
         """
+        logging.info("Starting data writing loop")
         while True:
             self.write_data(self.dequeue_data())
 
@@ -116,19 +97,15 @@ def create_log_directories(instrument_names):
     for instrument_name in instrument_names:
         log_directory = f"logs/{instrument_name}"
         if not os.path.isdir(log_directory):
-            info_string = (
-                f"[{dt.now().__str__()}] INFO: LOG DIRECTORY FOR INSTRUMENT {instrument_name}"
-                " DOES NOT EXIST - CREATING\n"
+            logging.info(
+                f"Log directory for instrument {instrument_name} does not exist - creating"
             )
-            sys.stderr.write(info_string)
             try:
                 os.makedirs(log_directory)
             except OSError:
                 # TODO: HANDLE NOT BEING ABLE TO CREATE LOG FILE
                 # This seems a fatal exception. Should this be reraised and
                 # handled by control.py?
-                err_string = (
-                    "[{dt.now().__str__()}] ERROR: UNABLE TO CREATE LOG DIRECTORY FOR"
-                    f" INSTRUMENT {instrument_name}\n"
+                logging.error(
+                    "Unable to create log directory for instrument {instrument_name}"
                 )
-                sys.stderr.write(err_string)
