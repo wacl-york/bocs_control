@@ -79,7 +79,9 @@ class DataWriter(threading.Thread):
             # TODO: HANDLE INABILITY TO OPEN DATA LOG
             logging.error("Unable to append to data log")
         except ValueError:
-            logging.debug(f"Unable to decode date from instrument timestamp: {data_fields[1]}")
+            logging.debug(
+                f"Unable to decode date from instrument timestamp: {data_fields[1]}"
+            )
 
     def run(self):
         """
