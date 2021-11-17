@@ -8,6 +8,7 @@ AQ INSTRUMENT CONTROL
 ============================================================================="""
 import bocs_control.data_reader as dr
 import bocs_control.data_writer as dw
+import bocs_control.bocs_logger
 
 import queue
 

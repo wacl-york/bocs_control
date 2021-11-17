@@ -18,5 +18,5 @@ PYTHON="$(command -v python3)"
 
 cd "${WORKDIR}" || exit 1
 for ID in A B; do
-  ${PYTHON} -m "${MODULEDIR}.archive" "${LOGDIR}/SENSOR_ARRAY_${ID}" >> "${LOGFILE}" 2>&1
+  ${PYTHON} "${MODULEDIR}/archive.py" "${LOGDIR}/SENSOR_ARRAY_${ID}" >> "${LOGFILE}" 2>&1
 done;
