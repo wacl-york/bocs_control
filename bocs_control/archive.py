@@ -11,8 +11,6 @@ import os
 import zipfile
 import sys
 
-import bocs_control.bocs_logger
-
 
 # ===============================================================================
 import boto3

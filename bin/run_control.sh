@@ -12,4 +12,4 @@ LOGFILE="${LOGDIR}/control.log"
 PYTHON=$(command -v python3)
 
 cd "${WORKDIR}" || exit 1
-${PYTHON} "${MODULEDIR}/control.py" > "${LOGFILE}" 2>&1
+${PYTHON} -m "${MODULEDIR}.control" > "${LOGFILE}" 2>&1
