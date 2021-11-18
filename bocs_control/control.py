@@ -18,7 +18,7 @@ def main():
     """
     # TODO add typing hints
     global_queue = queue.Queue()
-    instrument_names = ["SENSOR_ARRAY_A", "SENSOR_ARRAY_B"]
+    instrument_names = ["SENSOR_ARRAY_A"]
     reader_threads = [None] * len(instrument_names)
 
     # could replace this with list comp to be more Pythonic
