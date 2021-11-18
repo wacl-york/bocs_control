@@ -3,8 +3,6 @@
 Archives yesterday's log file.
 ================================================================================
 #############################################################################"""
-import bocs_logger
-
 import argparse
 import datetime
 import glob

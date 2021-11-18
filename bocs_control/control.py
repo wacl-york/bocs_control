@@ -6,9 +6,8 @@ AQ INSTRUMENT CONTROL
 - Starts a data writing thread which takes data from the shared data structure
   and writes it to log files
 ============================================================================="""
-import bocs_logger
-import data_reader as dr
-import data_writer as dw
+import bocs_control.data_reader as dr
+import bocs_control.data_writer as dw
 
 import queue
 

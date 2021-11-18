@@ -5,7 +5,7 @@ Unit tests for archive.py
 import os
 import unittest
 from unittest.mock import patch, Mock
-import archive
+from bocs_control import archive
 
 
 class TestAddHeader(unittest.TestCase):
