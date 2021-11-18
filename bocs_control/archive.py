@@ -13,7 +13,6 @@ import sys
 
 
 # ===============================================================================
-import boto3
 
 # ===============================================================================
 def get_script_args():
@@ -130,6 +129,7 @@ def main():
         data_file = file_to_archive(script_args.data_directory)
         prepend_header(data_file, "misc/header.txt")
         compress_file(data_file)
+        os.remove(data_file)
     except RuntimeError as exception:
         logging.error(exception)
         logging.error("Terminating execution")
