@@ -8,9 +8,10 @@ TODO
 
 # debian build files
 .pybuild
+*.deb
 debian/.debhelper
 debian/debhelper-build-stamp
-debian/python3-bocscontrol*
+debian/python3-bocs*
 debian/files
 
 # python build

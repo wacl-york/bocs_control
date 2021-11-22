@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name="python-bocscontrol",
+    name="bocs",
     version="1.0.0",
     description="Control code for BOCS instrument",
     keywords="BOCS, air quality, low cost sensors",
@@ -14,8 +14,8 @@ setup(
     python_requires=">=3.4, <4",
     entry_points={
         "console_scripts": [
-            "bocs_control = control.__main__:main",
-            "bocs_archive = archive.__main__:main",
+            "bocs_control = bocs_control.control:main",
+            "bocs_archive = bocs_control.archive:main",
         ]
     },
 )
