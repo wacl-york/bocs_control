@@ -14,6 +14,7 @@ debian/debhelper-build-stamp
 debian/files
 debian/python3-bocs*
 !debian/python3-bocs.service
+!debian/python3-bocs.udev
 
 # python build
 *.egg-info
