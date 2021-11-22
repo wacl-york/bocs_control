@@ -2,10 +2,10 @@
 Description=BOCS Data Collector
 
 [Service]
-WorkingDirectory=/home/pi/bocs_control
+WorkingDirectory=/home/pi
 User=pi
 Group=pi
-ExecStart=/bin/bash /home/pi/bocs_control/bin/run_control.sh
+ExecStart=bocs_control
 Type=simple
 Restart=always
 
