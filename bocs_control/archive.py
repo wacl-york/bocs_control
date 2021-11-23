@@ -11,6 +11,8 @@ import os
 import zipfile
 import sys
 
+from bocs_control.header import HEADER
+
 
 # ===============================================================================
 
@@ -34,7 +36,7 @@ def get_script_args():
     return arg_parser.parse_args()
 
 
-def prepend_header(data_fn: str, header_fn: str) -> None:
+def prepend_header(data_fn: str) -> None:
     """
     Adds the header to the data file.
 
@@ -49,14 +51,7 @@ def prepend_header(data_fn: str, header_fn: str) -> None:
     with open(data_fn, "r") as data_file:
         contents: list = data_file.readlines()
 
-    try:
-        with open(header_fn, "r") as header_file:
-            header: list = header_file.readlines()
-    except FileNotFoundError as ex:
-        error_string = f"Couldn't open header file at {header_fn}"
-        raise RuntimeError(error_string) from ex
-
-    contents = header + contents
+    contents = HEADER + contents
 
     with open(data_fn, "w") as data_file:
         data_file.writelines(contents)
@@ -127,7 +122,7 @@ def main():
             f"Attempting to archive yesterday's data file from directory {script_args.data_directory}"
         )
         data_file = file_to_archive(script_args.data_directory)
-        prepend_header(data_file, "misc/header.txt")
+        prepend_header(data_file)
         compress_file(data_file)
         os.remove(data_file)
     except RuntimeError as exception:
