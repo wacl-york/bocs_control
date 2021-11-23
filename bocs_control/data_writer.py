@@ -22,7 +22,6 @@ class DataWriter(threading.Thread):
         threading.Thread.__init__(self)
         logging.info("Initialising data logging thread")
         self.queue = shared_queue
-        create_log_directories(instrument_names)
 
     def dequeue_data(self):
         """
@@ -48,9 +47,10 @@ class DataWriter(threading.Thread):
         try:
             data_fields = data.split(",")
             id_string = data_fields[0]
+            log_dir = f"logs/{id_string}"
             if re.match("ERROR", data_fields[1]):
                 filename = f"{id_string}_error.log"
-                with open(f"logs/{id_string}/{filename}", "a") as data_log:
+                with open(f"{log_dir}/{filename}", "a") as data_log:
                     data_log.write(data_fields[1])
             elif re.match("SENSOR_ARRAY_[AB]", data_fields[0]):
                 date = dt.utcfromtimestamp(int(data_fields[1]))
@@ -70,7 +70,7 @@ class DataWriter(threading.Thread):
                 f"{str(date.day).zfill(2)}"
             )
             filename = f"{id_string}_{date_string}_data.log"
-            with open(f"logs/{id_string}/{filename}", "a") as data_log:
+            with open(f"{log_dir}/{filename}", "a") as data_log:
                 data_log.write(",".join(data_fields[1:]))
         # This is a big try/catch. hard to see where these exceptions were
         # thrown. Can it be refactored to have exceptions handled closer to
@@ -90,24 +90,3 @@ class DataWriter(threading.Thread):
         logging.info("Starting data writing loop")
         while True:
             self.write_data(self.dequeue_data())
-
-
-def create_log_directories(instrument_names):
-    """
-    Create a directory to store instrument log files.
-    """
-    for instrument_name in instrument_names:
-        log_directory = f"logs/{instrument_name}"
-        if not os.path.isdir(log_directory):
-            logging.info(
-                f"Log directory for instrument {instrument_name} does not exist - creating"
-            )
-            try:
-                os.makedirs(log_directory)
-            except OSError:
-                # TODO: HANDLE NOT BEING ABLE TO CREATE LOG FILE
-                # This seems a fatal exception. Should this be reraised and
-                # handled by control.py?
-                logging.error(
-                    "Unable to create log directory for instrument {instrument_name}"
-                )

@@ -2,7 +2,7 @@
 Description=BOCS Data Collector
 
 [Service]
-WorkingDirectory=/home/pi
+WorkingDirectory=/home/pi/bocs
 User=pi
 Group=pi
 ExecStart=bocs_control
