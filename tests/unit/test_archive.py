@@ -6,7 +6,7 @@ import os
 import unittest
 from unittest.mock import patch, Mock
 from bocs_control import archive
-from bocs_control.header import HEADER
+from bocs_control.config import HEADER
 
 
 class TestAddHeader(unittest.TestCase):
@@ -23,7 +23,7 @@ class TestAddHeader(unittest.TestCase):
         os.remove(self.data_fn)
 
     def test_success(self):
-        with patch("bocs_control.archive.HEADER", self.dummy_header):
+        with patch("bocs_control.archive.cfg.HEADER", self.dummy_header):
             archive.prepend_header(self.data_fn)
 
         with open(self.data_fn, "r") as infile:

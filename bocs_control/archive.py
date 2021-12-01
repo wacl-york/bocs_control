@@ -11,7 +11,7 @@ import os
 import zipfile
 import sys
 
-from bocs_control.header import HEADER
+import bocs_control.config as cfg
 
 
 # ===============================================================================
@@ -51,7 +51,7 @@ def prepend_header(data_fn: str) -> None:
     with open(data_fn, "r") as data_file:
         contents: list = data_file.readlines()
 
-    contents = HEADER + contents
+    contents = cfg.HEADER + contents
 
     with open(data_fn, "w") as data_file:
         data_file.writelines(contents)
