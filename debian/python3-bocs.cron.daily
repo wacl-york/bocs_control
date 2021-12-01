@@ -13,8 +13,8 @@
 WORKDIR="/home/pi/bocs"
 LOGDIR="${WORKDIR}/logs"
 LOGFILE="${LOGDIR}/archive.log"
+DATADIR="${LOGDIR}/data"
 
+# TODO is this necessary now bocs_archive has been installed as a system wide script?
 cd "${WORKDIR}" || exit 1
-for ID in A B; do
-  "bocs_archive" "${LOGDIR}/SENSOR_ARRAY_${ID}" >> "${LOGFILE}" 2>&1
-done;
+"bocs_archive" "${DATADIR}" >> "${LOGFILE}" 2>&1

@@ -5,10 +5,10 @@ DataWriter CLASS
 ============================================================================="""
 from datetime import datetime as dt
 import logging
-import os
 import re
-import sys
 import threading
+
+import bocs_control.config as cfg
 
 # ===============================================================================
 class DataWriter(threading.Thread):
@@ -47,12 +47,10 @@ class DataWriter(threading.Thread):
         try:
             data_fields = data.split(",")
             id_string = data_fields[0]
-            log_dir = f"logs/{id_string}"
             if re.match("ERROR", data_fields[1]):
-                filename = f"{id_string}_error.log"
-                with open(f"{log_dir}/{filename}", "a") as data_log:
+                with open(cfg.ERROR_LOG_FN, "a") as data_log:
                     data_log.write(data_fields[1])
-            elif re.match("SENSOR_ARRAY_[AB]", data_fields[0]):
+            elif id_string in cfg.INSTRUMENTS:
                 date = dt.utcfromtimestamp(int(data_fields[1]))
             else:
                 # Should this ever be reached?
@@ -65,12 +63,9 @@ class DataWriter(threading.Thread):
             # Should this flow be if (error): log error & return, else log data?
 
             # This would be more interpretable as date.strftime("%Y-%m-%d")
-            date_string = (
-                f"{date.year}-{str(date.month).zfill(2)}-"
-                f"{str(date.day).zfill(2)}"
-            )
-            filename = f"{id_string}_{date_string}_data.log"
-            with open(f"{log_dir}/{filename}", "a") as data_log:
+            date_string = date.strftime("%Y-%m-%d")
+            filename = f"{date_string}_data.log"
+            with open(f"{cfg.DATA_LOG_DIR}/{filename}", "a") as data_log:
                 data_log.write(",".join(data_fields[1:]))
         # This is a big try/catch. hard to see where these exceptions were
         # thrown. Can it be refactored to have exceptions handled closer to
