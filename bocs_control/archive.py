@@ -3,7 +3,6 @@
 Archives yesterday's log file.
 ================================================================================
 #############################################################################"""
-import argparse
 import datetime
 import glob
 import logging
@@ -17,23 +16,6 @@ import bocs_control.config as cfg
 # ===============================================================================
 
 # ===============================================================================
-def get_script_args():
-    """
-    Get command line arguments and options.
-
-    Args:
-        None.
-
-    Returns:
-        A argparse.Namespace object.
-    """
-    description = "Archives previous day's data file"
-    arg_parser = argparse.ArgumentParser(description=description)
-    help_string = "Path of directory in which to find data"
-    arg_parser.add_argument(
-        "data_directory", metavar="data_directory", type=str, help=help_string,
-    )
-    return arg_parser.parse_args()
 
 
 def prepend_header(data_fn: str) -> None:
@@ -82,29 +64,29 @@ def compress_file(filename: str) -> str:
     return outfile_name
 
 
-def file_to_archive(directory: str) -> str:
+def file_to_archive() -> str:
     """
     Get the file to be archived, looking for yesterday's date in the
     filename and a .log extension.
 
     Args:
-        - directory (str): The directory where the log should be located.
+        - None.
 
     Returns:
         The filename of the log to be archived.
     """
-    absolute_directory = os.path.abspath(directory)
+    log_dir = cfg.DATA_LOG_DIR
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     date_string = yesterday.strftime("%Y-%m-%d")
-    glob_pattern = os.path.join(absolute_directory, f"*{date_string}*.log")
+    glob_pattern = os.path.join(log_dir, f"{date_string}_data.log")
     candidate = glob.glob(glob_pattern)
 
     if not candidate:
-        error_string = f"Unable to find a data file matching yesterday's date ({date_string})"
+        error_string = f"Unable to find a data file matching yesterday's date ({date_string}) in dir {log_dir}"
         raise RuntimeError(error_string)
 
     if len(candidate) > 1:
-        error_string = f"Multiple data files found for yesterday: {candidate}"
+        error_string = f"Multiple data files found for yesterday: {candidate} in dir {log_dir}"
         raise RuntimeError(error_string)
 
     return candidate[0]
@@ -115,13 +97,9 @@ def main():
     """
     Main entry point for this script.
     """
-    script_args = get_script_args()
-
     try:
-        logging.info(
-            f"Attempting to archive yesterday's data file from directory {script_args.data_directory}"
-        )
-        data_file = file_to_archive(script_args.data_directory)
+        logging.info(f"Attempting to archive yesterday's data file")
+        data_file = file_to_archive()
         prepend_header(data_file)
         compress_file(data_file)
         os.remove(data_file)

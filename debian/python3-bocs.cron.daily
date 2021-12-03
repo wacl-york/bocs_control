@@ -13,8 +13,5 @@
 WORKDIR="/home/pi/bocs"
 LOGDIR="${WORKDIR}/logs"
 LOGFILE="${LOGDIR}/archive.log"
-DATADIR="${LOGDIR}/data"
 
-# TODO is this necessary now bocs_archive has been installed as a system wide script?
-cd "${WORKDIR}" || exit 1
-"bocs_archive" "${DATADIR}" >> "${LOGFILE}" 2>&1
+"bocs_archive" >> "${LOGFILE}" 2>&1
