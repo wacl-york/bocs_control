@@ -17,6 +17,7 @@ debian/python3-bocs*
 !debian/python3-bocs.udev
 !debian/python3-bocs.cron*
 !debian/python3-bocs.postinst
+!debian/python3-bocs.bocs.logrotate
 
 # python build
 *.egg-info
