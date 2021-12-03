@@ -19,4 +19,4 @@ override_dh_fixperms:
 	chmod -R 777 debian/python3-bocs/home/pi/bocs
 
 override_dh_installudev:
-	dh_installudev --priority 10
+	dh_installudev --name bocs --priority 10
