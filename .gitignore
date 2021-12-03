@@ -13,7 +13,7 @@ debian/.debhelper
 debian/debhelper-build-stamp
 debian/files
 debian/python3-bocs*
-!debian/python3-bocs.service
+!debian/python3-bocs.bocs.service
 !debian/python3-bocs.udev
 !debian/python3-bocs.cron*
 !debian/python3-bocs.postinst
