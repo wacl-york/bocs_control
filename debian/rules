@@ -20,3 +20,10 @@ override_dh_fixperms:
 
 override_dh_installudev:
 	dh_installudev --name bocs --priority 10
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -r debian/*debhelper*
+	rm debian/python3-bocs.substvars
+	rm -r *.egg-info
+	rm -r debian/*/DEBIAN
