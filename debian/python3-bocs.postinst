@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+chown -R pi:pi /home/pi/bocs
+udevadm control --reload-rules && udevadm trigger --action=add
+sleep 2s
+systemctl start bocs
+
+exit 0

@@ -106,11 +106,7 @@ class DataReader(threading.Thread):
         to process.
         """
         logging.debug(f"{self.name} enqueueing data to shared queue")
-        # TODO
-        # What is this magic number 5 relating to? Looks to me
-        # like it's stripping /dev/ away to leave SENSOR_ARRAY_X,
-        # but this can just be obtained as self.name
-        self.queue.put(f"{self.port_name[5:]},{data.decode()}", block=True)
+        self.queue.put(f"{self.name},{data.decode()}", block=True)
 
         logging.debug(f"Queue is now size {self.queue.qsize()}")
 
