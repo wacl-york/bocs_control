@@ -18,7 +18,7 @@ class DataWriter(threading.Thread):
     of the serial input to be flushed.
     """
 
-    def __init__(self, shared_queue, instrument_names):
+    def __init__(self, shared_queue):
         threading.Thread.__init__(self)
         logging.info("Initialising data logging thread")
         self.queue = shared_queue

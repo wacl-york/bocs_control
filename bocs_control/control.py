@@ -10,7 +10,9 @@ import bocs_control.data_reader as dr
 import bocs_control.data_writer as dw
 import bocs_control.config as cfg
 
+import logging
 import queue
+import sys
 
 # ===============================================================================
 def main():
@@ -18,16 +20,21 @@ def main():
     Main entry point for the program.
     """
     global_queue = queue.Queue()
-    reader_threads = [
-        dr.DataReader(f"{x}", f"/dev/{x}", global_queue)
-        for x in cfg.INSTRUMENTS
-    ]
+    reader_threads = []
+    for instrument in cfg.INSTRUMENTS:
+        try:
+            reader = dr.DataReader(
+                f"{instrument}", f"/dev/{instrument}", global_queue
+            )
+        except RuntimeError:
+            logging.error(
+                f"Unable to connect to {instrument}, terminating execution."
+            )
+            sys.exit(1)
 
-    # TODO Is any error handling required in this script? what if reader can't create serial
-    # connection, or writer can't write to file?
+        reader_threads.append(reader)
 
-    writer_thread = dw.DataWriter(global_queue, cfg.INSTRUMENTS)
-
+    writer_thread = dw.DataWriter(global_queue)
     writer_thread.start()
     for thread in reader_threads:
         thread.start()
