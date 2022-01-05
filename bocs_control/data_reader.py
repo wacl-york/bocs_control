@@ -21,30 +21,24 @@ class DataReader(threading.Thread):
 
     def __init__(self, name, port_name, shared_queue):
         threading.Thread.__init__(self)
-        logging.info(
-            f"{name} initialising serial reader on port name {port_name}"
-        )
+        logging.info(f"Initialising serial reader on port name {port_name}")
         self.name = name
         self.port_name = port_name
         self.queue = shared_queue
 
         try:
-            logging.info(
-                f"{self.name} checking port {self.port_name} availability"
-            )
+            logging.info(f"Checking port {self.port_name} availability")
             self.check_port_available()
         except serial.serialutil.SerialException as ex:
-            logging.error(
-                f"{self.name} thinks port {self.port_name} is unavailable"
-            )
+            logging.error(f"Port {self.port_name} is unavailable")
             raise RuntimeError() from ex
 
         try:
-            logging.info(f"{self.name} opening port {self.port_name} for read")
+            logging.info(f"Opening port {self.port_name} for read")
             self.port = serial.Serial(self.port_name, 9600, timeout=1)
             self.port.reset_input_buffer()
         except serial.serialutil.SerialException as ex:
-            logging.error(f"{self.name} can't open {self.port_name} for read")
+            logging.error(f"Can't open {self.port_name} for read")
             raise RuntimeError() from ex
 
     def check_port_available(self):
