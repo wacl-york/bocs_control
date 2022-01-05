@@ -23,7 +23,7 @@ With the Pi housed in the BOCS and all wires connected as shown in <TODO documen
   2. Install it with `sudo apt install ./python3-bocs_1.0.0-0_all.deb`
 
 The data collection should start automatically, confirm that data is appearing in `~/bocs/logs/data/`.
-If isn't, check the log (`journalctl -u bocs`).
+If isn't, check the log (`journalctl -t bocs_control`).
 
 # Building from source
 
