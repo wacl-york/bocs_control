@@ -58,10 +58,12 @@ class DataWriter(threading.Thread):
             try:
                 date = dt.utcfromtimestamp(int(data_fields[1]))
             except ValueError:
-                logging.error(
-                    f"Unable to decode date from instrument timestamp: {data_fields[1]}, taking timestamp from Pi clock"
+                # This occurs every 2s when whitespace is available in the port
+                # and can be safely ignored
+                logging.debug(
+                    f"Unable to decode date from instrument timestamp: {data_fields[1]}"
                 )
-                date = dt.now()
+                return
 
         date_string = date.strftime("%Y-%m-%d")
         filename = f"{date_string}_data.log"
