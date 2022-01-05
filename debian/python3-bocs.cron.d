@@ -2,4 +2,4 @@
 #===============================================================================
 # Compresses yesterday's data log and removes the raw text file.
 ################################################################################
-0 1 * * * pi bocs_archive 2>&1 | /usr/bin/logger -t bocs_control
+0 1 * * * pi bocs_archive 2>&1 | /usr/bin/logger -t bocs
