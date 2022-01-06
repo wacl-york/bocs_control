@@ -21,50 +21,25 @@ class DataReader(threading.Thread):
 
     def __init__(self, name, port_name, shared_queue):
         threading.Thread.__init__(self)
-        logging.info(
-            f"{name} initialising serial reader on port name {port_name}"
-        )
+        logging.info(f"Initialising serial reader on port name {port_name}")
         self.name = name
         self.port_name = port_name
         self.queue = shared_queue
 
         try:
-            logging.info(
-                f"{self.name} checking port {self.port_name} availability"
-            )
+            logging.info(f"Checking port {self.port_name} availability")
             self.check_port_available()
-        except serial.serialutil.SerialException:
-            # TODO: HANDLE PORT UNAVAILABLE
-            # What needs to be done with this exception? Terminate thread?
-            # Reraise to let control.py handle it?
-            # Seems like a fatal error, unless want to keep retrying
-            logging.error(
-                f"{self.name} thinks port {self.port_name} is unavailable"
-            )
+        except serial.serialutil.SerialException as ex:
+            logging.error(f"Port {self.port_name} is unavailable")
+            raise RuntimeError() from ex
 
         try:
-            logging.info(
-                f"{self.name} checking port {self.port_name} functionality"
-            )
-            # I don't see what use this check is doing. It asserts that the
-            # port can be opened, but any errors when opening the port are also
-            # caught below in the next try/catch block
-            self.check_port_function()
-        except serial.serialutil.SerialException:
-            # TODO: HANDLE INCORRECT PORT FUNCTION
-            # Ditto about how to handle this
-            logging.error(
-                f"{self.name} thinks port {self.port_name} is malfunctioning"
-            )
-
-        try:
-            logging.info(f"{self.name} opening port {self.port_name} for read")
+            logging.info(f"Opening port {self.port_name} for read")
             self.port = serial.Serial(self.port_name, 9600, timeout=1)
             self.port.reset_input_buffer()
-        except serial.serialutil.SerialException:
-            # TODO: HANDLE PORT NOT OPENABLE EXCEPTION
-            # ditto
-            logging.error(f"{self.name} can't open {self.port_name} for read")
+        except serial.serialutil.SerialException as ex:
+            logging.error(f"Can't open {self.port_name} for read")
+            raise RuntimeError() from ex
 
     def check_port_available(self):
         """
@@ -77,26 +52,11 @@ class DataReader(threading.Thread):
         except AssertionError as exception:
             raise serial.serialutil.SerialException from exception
 
-    def check_port_function(self):
-        """
-        Check whether or not data can be read from the serial port, and whether
-        or not any data that can be read seems sensible.
-        """
-        try:
-            port = serial.Serial(self.port_name, 9600, timeout=1)
-            port.close()
-        except serial.serialutil.SerialException as exception:
-            raise serial.serialutil.SerialException from exception
-
     def read_data_line(self):
         """
         Read and return a line of attached instrument data.
         """
         logging.debug(f"{self.name} reading data from {self.port_name}")
-        # No exceptions to catch here?
-        # Looks like this will timeout after 1s (specified when Serial objected
-        # created). What happens at that point? Will it just return whatever is
-        # in the buffer, even if no newline character has been reached?
         data = self.port.readline()
         return data
 
@@ -117,11 +77,6 @@ class DataReader(threading.Thread):
         while True:
             try:
                 self.enqueue_data(self.read_data_line())
-            # Is this the only exception from read_data_line?
-            # What about if line doesn't have X number of commas? Seen this
-            # issue several times in the raw data.
-            # See also earlier comment about timeout, does that raise an
-            # exception or just return whatever is in the buffer?
             except UnicodeDecodeError:
                 logging.error(
                     f"{self.name} caught some garbage; ignoring data line"
