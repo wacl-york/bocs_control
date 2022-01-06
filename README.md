@@ -23,8 +23,12 @@ With the Pi housed in the BOCS and all wires connected as shown in <TODO documen
   2. Install it with `sudo apt install ./python3-bocs_1.0.0-0_all.deb`
 
 The data collection should start automatically, confirm that data is appearing in `~/bocs/data/`.
-If isn't, check the log (`journalctl -t bocs`).
-The log also contains output from the nightly archiving process.
+If isn't, check the log to diagnose the problem: `journalctl -t bocs_control`.
+
+## Daily archiving
+
+Each day at 01:00 the previous day's data is archived into a zip folder and placed in `~/bocs/data` using the same file naming convention as the plaintext data files.
+Logs from this process are sent to the system log and can be viewed using `journalctl -t bocs_archive`.
 
 # Building from source
 

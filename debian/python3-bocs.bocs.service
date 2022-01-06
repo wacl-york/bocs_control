@@ -11,7 +11,6 @@ ExecStart=bocs_control
 Type=simple
 Restart=always
 RestartSec=10
-SyslogIdentifier=bocs
 
 [Install]
 WantedBy=multi-user.target
