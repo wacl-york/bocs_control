@@ -1,8 +1,13 @@
-"""=============================================================================
-config MODULE
---------------------------------------------------------------------------------
+"""
+Contains package level constants.
 
-============================================================================="""
+Misc variables:
+
+    ERROR_LOG_FN (str)
+    DATA_LOG_DIR (str)
+    INSTRUMENTS (list[str])
+    HEADER (list[str])
+"""
 ERROR_LOG_FN = "/home/pi/bocs/error.log"
 DATA_LOG_DIR = "/home/pi/bocs/data"
 INSTRUMENTS = ["BOCS_SENSOR_ARRAY"]

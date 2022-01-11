@@ -1,20 +1,23 @@
-"""=============================================================================
-AQ INSTRUMENT CONTROL
---------------------------------------------------------------------------------
-- Starts a data reading thread for each of the listed instrument names, which
-  reads incoming data from serial ports and stores it in a shared data structure
-- Starts a data writing thread which takes data from the shared data structure
-  and writes it to log files
-============================================================================="""
-import bocs_control.data_reader as dr
-import bocs_control.data_writer as dw
-import bocs_control.config as cfg
+"""
+Air quality instrument control program.
 
+Reads incoming data from serial instruments and stores it in a shared data
+structure, which is subsequently written to log files.
+
+Functions:
+
+    main()
+
+"""
 import logging
 import queue
 import sys
 
-# ===============================================================================
+import bocs_control.data_reader as dr
+import bocs_control.data_writer as dw
+import bocs_control.config as cfg
+
+
 def main():
     """
     Main entry point for the program.

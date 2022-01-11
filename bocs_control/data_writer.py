@@ -1,16 +1,20 @@
-"""=============================================================================
-DataWriter CLASS
---------------------------------------------------------------------------------
+"""
+Writes data from a shared queue to file.
 
-============================================================================="""
+Classes:
+
+    DataWriter
+
+"""
 from datetime import datetime as dt
 import logging
+from queue import Queue
 import re
 import threading
 
 import bocs_control.config as cfg
 
-# ===============================================================================
+
 class DataWriter(threading.Thread):
     """
     DataWriter describes a thread whose purpose is to flush lines of serial
@@ -18,14 +22,29 @@ class DataWriter(threading.Thread):
     of the serial input to be flushed.
     """
 
-    def __init__(self, shared_queue):
+    def __init__(self, shared_queue: Queue):
+        """
+        Sets queue.
+
+        Args:
+            shared_queue (Queue): Global FIFO queue.
+
+        Returns:
+            None
+        """
         threading.Thread.__init__(self)
         logging.info("Initialising data logging thread")
         self.queue = shared_queue
 
-    def dequeue_data(self):
+    def dequeue_data(self) -> str:
         """
         Pull a line of data from the front of a shared queue.
+
+        Args:
+            None.
+
+        Returns:
+            A string with comma-delimited data fields.
         """
         logging.debug("Dequeueing data")
         line = self.queue.get(block=True, timeout=None)
@@ -33,10 +52,16 @@ class DataWriter(threading.Thread):
 
         return line
 
-    def write_data(self, data):
+    def write_data(self, data: str) -> None:
         """
         Write data to the appropriate log file, named by instrument name and
         date.
+
+        Args:
+            data (str): Incoming comma separated data.
+
+        Returns:
+            None
         """
         logging.debug("Writing data to log file")
         data_fields = data.split(",")
@@ -75,9 +100,18 @@ class DataWriter(threading.Thread):
                 f"Unable to append to data log {cfg.DATA_LOG_DIR}/{filename}"
             )
 
-    def run(self):
+    def run(self) -> None:
         """
         Main entry point for DataWriter threads.
+
+        Runs an infinite loop that polls the queue and writes the available data
+        to a file.
+
+        Args:
+            None.
+
+        Returns:
+            None.
         """
         logging.info("Starting data writing loop")
         while True:

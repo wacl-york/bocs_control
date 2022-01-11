@@ -1,8 +1,17 @@
-#!/usr/bin/env python
-"""#############################################################################
+"""
 Archives yesterday's log file.
-================================================================================
-#############################################################################"""
+
+Adds the CSV header to yesterday's data log, compresses it with Zip, and removes
+the original file.
+
+Functions:
+
+    prepend_header(str)
+    compress_file(str) -> str
+    get_file_to_archive() -> str
+    main()
+
+"""
 import datetime
 import glob
 import logging
@@ -11,11 +20,6 @@ import zipfile
 import sys
 
 import bocs_control.config as cfg
-
-
-# ===============================================================================
-
-# ===============================================================================
 
 
 def prepend_header(data_fn: str) -> None:
@@ -41,13 +45,16 @@ def prepend_header(data_fn: str) -> None:
 
 def compress_file(filename: str) -> str:
     """
-    Zip the file that we are going to transfer to S3.
+    Zips the specified file.
 
     Args:
         - filename (str): File to be zipped.
 
     Returns:
         The resultant archive filename.
+
+    Raises:
+        RuntimeError
     """
     outfile_name = f"{filename}.zip"
     try:
@@ -64,7 +71,7 @@ def compress_file(filename: str) -> str:
     return outfile_name
 
 
-def file_to_archive() -> str:
+def get_file_to_archive() -> str:
     """
     Get the file to be archived, looking for yesterday's date in the
     filename and a .log extension.
@@ -74,6 +81,9 @@ def file_to_archive() -> str:
 
     Returns:
         The filename of the log to be archived.
+
+    Raises:
+        RuntimeError
     """
     log_dir = cfg.DATA_LOG_DIR
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
@@ -92,14 +102,13 @@ def file_to_archive() -> str:
     return candidate[0]
 
 
-# ===============================================================================
 def main():
     """
     Main entry point for this script.
     """
     try:
         logging.info(f"Attempting to archive yesterday's data file")
-        data_file = file_to_archive()
+        data_file = get_file_to_archive()
         prepend_header(data_file)
         compress_file(data_file)
         os.remove(data_file)
@@ -114,6 +123,5 @@ def main():
     sys.exit(ret_code)
 
 
-# ===============================================================================
 if __name__ == "__main__":
     main()
