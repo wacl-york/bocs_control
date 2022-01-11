@@ -12,6 +12,8 @@ from queue import Queue
 import serial
 from serial.tools.list_ports import comports
 
+import bocs_control.config as cfg
+
 
 class DataReader(threading.Thread):
     """
@@ -41,16 +43,16 @@ class DataReader(threading.Thread):
         self.port_name = port_name
         self.queue = shared_queue
 
+        logging.info(f"Checking port {self.port_name} availability")
         try:
-            logging.info(f"Checking port {self.port_name} availability")
             self.check_port_available()
         except serial.serialutil.SerialException as ex:
             logging.error(f"Port {self.port_name} is unavailable")
             raise RuntimeError() from ex
 
+        logging.info(f"Opening port {self.port_name} for read")
         try:
-            logging.info(f"Opening port {self.port_name} for read")
-            self.port = serial.Serial(self.port_name, 9600, timeout=1)
+            self.port = serial.Serial(self.port_name, cfg.BAUD_RATE, timeout=1)
             self.port.reset_input_buffer()
         except serial.serialutil.SerialException as ex:
             logging.error(f"Can't open {self.port_name} for read")
