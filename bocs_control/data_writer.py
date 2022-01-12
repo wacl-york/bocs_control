@@ -83,8 +83,6 @@ class DataWriter(threading.Thread):
             try:
                 date = dt.utcfromtimestamp(int(data_fields[1]))
             except ValueError:
-                # This occurs every 2s when whitespace is available in the port
-                # and can be safely ignored
                 logging.debug(
                     f"Unable to decode date from instrument timestamp: {data_fields[1]}"
                 )
