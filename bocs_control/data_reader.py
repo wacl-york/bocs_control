@@ -52,7 +52,7 @@ class DataReader(threading.Thread):
 
         logging.info(f"Opening port {self.port_name} for read")
         try:
-            self.port = serial.Serial(self.port_name, cfg.BAUD_RATE, timeout=1)
+            self.port = serial.Serial(self.port_name, cfg.BAUD_RATE, timeout=None)
             self.port.reset_input_buffer()
         except serial.serialutil.SerialException as ex:
             logging.error(f"Can't open {self.port_name} for read")
