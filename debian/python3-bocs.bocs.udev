@@ -1,0 +1,1 @@
+SUBSYSTEM=="tty", ACTION=="add", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0043", SYMLINK+="BOCS_SENSOR_ARRAY"

@@ -1,0 +1,16 @@
+[Unit]
+Description=BOCS Data Collector
+StartLimitInterval=60
+StartLimitBurst=3
+
+[Service]
+WorkingDirectory=/home/pi/bocs
+User=pi
+Group=pi
+ExecStart=bocs_control
+Type=simple
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

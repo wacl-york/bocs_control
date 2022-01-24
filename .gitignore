@@ -4,11 +4,36 @@
 # Ignore various files that we don't want in the history.
 ################################################################################
 
+TODO
+
+# debian build files
+.pybuild
+*.deb
+debian/.debhelper
+debian/debhelper-build-stamp
+debian/files
+debian/python3-bocs*
+!debian/python3-bocs.bocs.service
+!debian/python3-bocs.bocs.udev
+!debian/python3-bocs.bocs.logrotate
+!debian/python3-bocs.cron*
+!debian/python3-bocs.dirs
+!debian/python3-bocs.postinst
+
+# python build
+*.egg-info
+
 # cache
 __pycache__
 
 # log files (testing)
 logs
+
+# pre-commit config
+.pre-commit-config.yaml
+
+# coverage testing
+.coverage
 
 # swap
 [._]*.s[a-v][a-z]
