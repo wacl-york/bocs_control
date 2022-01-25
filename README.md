@@ -3,11 +3,11 @@
 Contains the source code for the `python3-bocs` Debian package that runs the BOCS air quality instrument, recording data to local storage.
 Deb files for installation are available in the [Releases page](https://github.com/wacl-york/bocs_control/releases).
 
-# Setup Pi
+# Setup Raspberry Pi
 
-The RaspberryPi needs setting up before the BOCS software can be installed.
+The Raspberry Pi needs setting up before the BOCS software can be installed.
 
-  1. Install the latest version of [RaspberryPi OS with desktop](https://www.raspberrypi.com/software/) to a microSD card
+  1. Install the latest version of [Raspberry Pi OS with desktop](https://www.raspberrypi.com/software/) to a microSD card
   2. Boot up the Pi (outside of the BOCS) and follow the onscreen instructions to setup locale, password, WiFi access (if needed), and **make sure to update the software**
   3. Reboot
   4. OPTIONAL: If you want to either use the touchscreen display or connect via SSH then run `sudo raspi-config`, go into Interface Options and enable `Legacy Camera` and/or `SSH`. Then Reboot
