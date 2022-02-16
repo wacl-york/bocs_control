@@ -52,7 +52,9 @@ class DataReader(threading.Thread):
 
         logging.info(f"Opening port {self.port_name} for read")
         try:
-            self.port = serial.Serial(self.port_name, cfg.BAUD_RATE, timeout=None)
+            self.port = serial.Serial(
+                self.port_name, cfg.BAUD_RATE, timeout=None
+            )
             self.port.reset_input_buffer()
         except serial.serialutil.SerialException as ex:
             logging.error(f"Can't open {self.port_name} for read")
@@ -78,7 +80,7 @@ class DataReader(threading.Thread):
         except AssertionError as exception:
             raise serial.serialutil.SerialException from exception
 
-    def read_data_line(self) -> str:
+    def read_data_line(self) -> bytes:
         """
         Read and return a line of attached instrument data.
 
@@ -92,7 +94,7 @@ class DataReader(threading.Thread):
         data = self.port.readline()
         return data
 
-    def enqueue_data(self, data: str) -> None:
+    def enqueue_data(self, data: bytes) -> None:
         """
         Put an incoming line of data into a shared queue, ready for a DataWriter
         to process.
